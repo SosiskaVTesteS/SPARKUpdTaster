@@ -2,15 +2,16 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>SPARK | Visual Taster</title>
-    <link rel="stylesheet" href="style.css"> </head>
+    <title>SPARK | Share Card Test</title>
+    <link rel="stylesheet" href="style.css">
+</head>
 <body>
 
-    <div class="main-card-mockup">
-        <div class="share-trigger" onclick="openShare()">
-            <img src="https://img.icons8.com/ios/50/ffffff/sent.png" width="20">
-        </div>
-        <p style="color: gray;">Нажми на стрелочку, чтобы проверить Share-окно</p>
+    <div class="test-area">
+        <button class="test-btn" onclick="openShare()">
+            <img src="https://img.icons8.com/ios-filled/50/e8c55a/sent.png" width="18">
+            Проверить дизайн Share-карточки
+        </button>
     </div>
 
     <div id="shareModal" class="share-overlay" onclick="closeShare()">
@@ -19,11 +20,22 @@
             
             <div class="share-content">
                 <div class="card-header">
-                    <span class="logo-text">SPARK</span>
-                    <span class="version-tag">PHASE ONE</span>
+                    <div class="brand">
+                        <span class="logo-text">SPARK</span>
+                        <span class="slogan">Light Up The Future</span>
+                    </div>
                 </div>
                 
                 <h2 class="idea-title">Rooftop Solar Leasing</h2>
+                
+                <div class="author-block">
+                    <div class="avatar">M</div>
+                    <div class="author-info">
+                        <span class="label">Автор искры:</span>
+                        <span class="nick">@maria_builds</span>
+                    </div>
+                </div>
+
                 <p class="idea-desc">Zero upfront cost. Revenue from grid surplus. 15% bill reduction.</p>
                 
                 <div class="card-footer">
@@ -31,7 +43,7 @@
                         <p>Инвесторов: <span>184</span></p>
                         <p>Пул: <span>7,200 SPK</span></p>
                     </div>
-                    <div class="qr-code">
+                    <div class="qr-wrapper">
                         <img id="qrImg" src="" alt="QR">
                     </div>
                 </div>
@@ -39,7 +51,6 @@
         </div>
     </div>
 
-    <script src="script.js"></script> </body>
+    <script src="script.js"></script>
+</body>
 </html>
-
-
