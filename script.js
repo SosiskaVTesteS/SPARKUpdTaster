@@ -2,13 +2,12 @@ function openShare() {
     const modal = document.getElementById('shareModal');
     const qrImg = document.getElementById('qrImg');
     
+    // Ссылка на проект (замени на свою)
     const targetUrl = "https://github.com/SPARK";
     
-    // Мягкий золотой цвет (без неона)
-    const goldColor = "c5a021"; 
-    const bgColor = "0d1117";
-    
-    qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${targetUrl}&color=${goldColor}&bgcolor=${bgColor}`;
+    // Генерируем QR в золотом цвете (#e8c55a -> color=e8c55a)
+    // bgcolor=0d1117 делает фон QR таким же, как у карточки
+    qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${targetUrl}&color=e8c55a&bgcolor=0d1117`;
     
     modal.style.display = 'flex';
     setTimeout(() => modal.classList.add('active'), 10);
