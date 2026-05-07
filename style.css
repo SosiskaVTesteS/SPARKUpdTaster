@@ -1,96 +1,85 @@
-body {
+ body {
     background: #05070a;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
     margin: 0;
-    font-family: 'Inter', sans-serif;
+    font-family: 'Inter', -apple-system, sans-serif;
 }
 
-/* Окно (затемнение фона) */
 .share-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.8);
-    backdrop-filter: blur(10px);
-    display: none; /* Прячем в начале */
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(12px);
+    display: none;
     justify-content: center;
     align-items: center;
-    z-index: 999;
+    z-index: 1000;
     opacity: 0;
-    transition: 0.4s;
+    transition: 0.4s ease;
 }
 
-.share-overlay.active {
-    display: flex;
-    opacity: 1;
-}
+.share-overlay.active { display: flex; opacity: 1; }
 
-/* Share-карточка */
 .share-card {
-    width: 320px;
+    width: 340px;
     background: #0d1117;
-    border-radius: 24px;
+    border-radius: 30px;
     position: relative;
-    padding: 2px; /* Место под рамку */
-    transform: scale(0.9) translateY(20px);
+    padding: 2px;
+    transform: scale(0.9);
     transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.2);
 }
 
-.share-overlay.active .share-card {
-    transform: scale(1) translateY(0);
-}
+.share-overlay.active .share-card { transform: scale(1); }
 
-/* ГРАДИЕНТНАЯ РАМКА (Золото-Мята) */
+/* Двухцветная рамка: Золото / Мята */
 .share-card::before {
     content: "";
     position: absolute;
     inset: 0;
-    border-radius: 24px;
+    border-radius: 30px;
     padding: 2px;
-    background: linear-gradient(135deg, #e8c55a 0%, #e8c55a 40%, #4fd1c5 60%, #4fd1c5 100%);
+    background: linear-gradient(135deg, #e8c55a 0%, #e8c55a 45%, #4fd1c5 55%, #4fd1c5 100%);
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     mask-composite: exclude;
 }
 
-.share-content {
-    background: #0d1117;
-    border-radius: 22px;
-    padding: 25px;
-}
+.share-content { background: #0d1117; border-radius: 28px; padding: 30px; }
 
-.logo-text { color: #e8c55a; font-weight: 900; letter-spacing: 2px; font-size: 14px; }
-.version-tag { color: #4fd1c5; font-size: 10px; margin-left: 5px; opacity: 0.7; }
+/* Логотип и слоган */
+.logo-text { color: #e8c55a; font-weight: 900; font-size: 22px; letter-spacing: 1px; display: block; }
+.slogan { color: #4fd1c5; font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; opacity: 0.8; }
 
-.idea-title { color: white; margin-top: 15px; font-size: 1.4rem; }
-.idea-desc { color: #8b949e; font-size: 0.9rem; line-height: 1.4; }
+.idea-title { color: white; margin: 20px 0 15px 0; font-size: 1.6rem; font-weight: 800; line-height: 1.2; }
 
-.card-footer {
-    margin-top: 25px;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-}
+/* Блок автора */
+.author-block { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; }
+.avatar { width: 32px; height: 32px; background: #4fd1c5; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #0d1117; }
+.label { display: block; color: #8b949e; font-size: 10px; text-transform: uppercase; }
+.nick { color: white; font-size: 14px; font-weight: 500; }
 
-.stats p { color: white; margin: 2px 0; font-size: 0.8rem; }
+.idea-desc { color: #8b949e; font-size: 1rem; line-height: 1.5; margin-bottom: 25px; }
+
+.card-footer { display: flex; justify-content: space-between; align-items: flex-end; }
+.stats p { color: white; margin: 4px 0; font-size: 0.9rem; }
 .stats span { color: #e8c55a; font-weight: bold; }
 
-.qr-code {
-    width: 60px;
-    height: 60px;
-    background: white;
-    border-radius: 8px;
-    padding: 4px;
+/* Золотой QR на темном фоне */
+.qr-wrapper {
+    width: 80px; height: 80px;
+    background: #0d1117;
+    border: 1px solid rgba(232, 197, 90, 0.3);
+    border-radius: 12px;
+    padding: 6px;
+    box-shadow: 0 0 15px rgba(232, 197, 90, 0.1);
 }
+.qr-wrapper img { width: 100%; height: 100%; filter: contrast(150%) brightness(120%); }
 
-.qr-code img { width: 100%; height: 100%; }
-
-/* Внутреннее свечение (для атмосферы) */
 .inner-glow {
-    position: absolute;
-    top: 0; right: 0;
-    width: 150px; height: 150px;
-    background: radial-gradient(circle, rgba(232, 197, 90, 0.1) 0%, transparent 70%);
+    position: absolute; top: 0; right: 0; width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(232, 197, 90, 0.05) 0%, transparent 70%);
     pointer-events: none;
 }
