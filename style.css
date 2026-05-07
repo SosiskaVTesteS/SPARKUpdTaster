@@ -1,37 +1,35 @@
+/* Обновленный контейнер для QR */
 .qr-wrapper {
     width: 80px; 
     height: 80px;
     background: #0d1117;
-    border: 1.5px solid #d4af37; /* Четкая золотая рамка */
+    /* Вместо яркой рамки — мягкий контур */
+    border: 1px solid rgba(197, 160, 33, 0.4); 
     border-radius: 12px;
     padding: 8px;
     position: relative;
-    overflow: hidden; /* Чтобы блик не вылезал за края */
-    box-shadow: 0 0 25px rgba(212, 175, 55, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Золотистое свечение вокруг кода */
+    box-shadow: 0 0 20px rgba(197, 160, 33, 0.15);
 }
 
 .qr-wrapper img { 
     width: 100%; 
     height: 100%; 
-    /* Добавляем эффект "металлика" через фильтры */
-    filter: sepia(0.5) saturate(2) brightness(1.1) drop-shadow(0 0 1px #d4af37);
+    /* Фильтр делает цвет мягче и естественнее */
+    filter: drop-shadow(0 0 1px rgba(212, 175, 55, 0.5)) contrast(1.1);
 }
 
-/* Эффект диагонального перелива (блик) */
+/* Элемент для эффекта перелива */
 .qr-wrapper::after {
     content: "";
     position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: linear-gradient(
-        45deg, 
-        transparent 45%, 
-        rgba(255, 255, 255, 0.1) 50%, 
-        transparent 55%
-    );
-    animation: gold-shimmer 4s infinite linear;
+    top: 0; left: 0; right: 0; bottom: 0;
+    border-radius: 12px;
+    /* Легкий градиент поверх кода для имитации блика */
+    background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 50%, rgba(0,0,0,0.1) 100%);
     pointer-events: none;
 }
 
