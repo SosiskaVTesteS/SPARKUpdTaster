@@ -1,20 +1,27 @@
 function toggleSystem(element) {
+    const wrapper = element.parentElement; // Получаем .system-wrapper
     const dimmer = document.getElementById('spaceDimmer');
     
-    if (element.classList.contains('focused')) {
-        element.classList.remove('focused');
+    if (wrapper.classList.contains('focused')) {
+        // Если уже открыто — закрываем
+        wrapper.classList.remove('focused');
         dimmer.classList.remove('active');
     } else {
-        // Убираем фокус с других, если они были открыты
-        document.querySelectorAll('.cosmic-system').forEach(sys => sys.classList.remove('focused'));
+        // Закрываем все остальные системы перед открытием новой
+        document.querySelectorAll('.system-wrapper').forEach(sys => {
+            sys.classList.remove('focused');
+        });
         
-        element.classList.add('focused');
+        // Открываем текущую
+        wrapper.classList.add('focused');
         dimmer.classList.add('active');
     }
 }
 
-// Закрытие при клике на пустоту
+// Закрытие при клике на затемненный фон
 document.getElementById('spaceDimmer').onclick = function() {
     this.classList.remove('active');
-    document.querySelectorAll('.cosmic-system').forEach(sys => sys.classList.remove('focused'));
+    document.querySelectorAll('.system-wrapper').forEach(sys => {
+        sys.classList.remove('focused');
+    });
 };
