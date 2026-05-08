@@ -1,40 +1,127 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SPARK | Observatory v5</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>SPARK Observatory</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <div id="spaceDimmer" class="space-dimmer"></div>
+  <!-- Звёздный фон -->
+  <canvas id="starfield"></canvas>
 
-    <div class="galaxy-canvas">
-        
-        <div class="void-center"></div>
+  <!-- Туманность (nebula) -->
+  <div class="nebula"></div>
 
-        <div class="sys-anchor tech-pos">
-            <div class="system-body" onclick="focusSystem(this)">
-                <div class="sun core-gold"></div>
-                <h3 class="sys-label">Технологии</h3>
-                
-                <div class="orbit orb-1"><div class="planet mint p-angle-45"><div class="info"><span class="n">AI</span><span class="v">12k</span></div></div></div>
-                <div class="orbit orb-2"><div class="planet azure p-angle-180"><div class="info"><span class="n">Cloud</span><span class="v">8k</span></div></div></div>
-                <div class="orbit orb-3"><div class="planet mint p-angle-300"><div class="info"><span class="n">Cyber</span><span class="v">5k</span></div></div></div>
-                <div class="orbit orb-4"><div class="planet azure p-angle-10"><div class="info"><span class="n">Web3</span><span class="v">9k</span></div></div></div>
-                <div class="orbit orb-5"><div class="planet mint p-angle-120"><div class="info"><span class="n">Quantum</span><span class="v">4k</span></div></div></div>
-            </div>
+  <!-- Затемнитель при фокусе -->
+  <div class="space-dimmer" id="dimmer"></div>
+
+  <!-- Основной контейнер -->
+  <main class="observatory-grid" id="observatory">
+
+    <!-- Центральная чёрная дыра -->
+    <div class="black-hole" id="blackHole">
+      <div class="bh-core"></div>
+      <div class="bh-ring bh-ring--1"></div>
+      <div class="bh-ring bh-ring--2"></div>
+      <div class="bh-ring bh-ring--3"></div>
+      <div class="bh-pulse"></div>
+      <div class="bh-label">SPARK<br><span>Observatory</span></div>
+    </div>
+
+    <!-- Система: Технологии -->
+    <div class="star-system" id="sys-tech" data-system="tech" data-label="Технологии">
+      <div class="system-core">
+        <div class="system-star"></div>
+        <div class="system-glow"></div>
+        <!-- 5 орбит -->
+        <div class="orbit orbit--1" style="--orbit-duration:23s; --orbit-delay:0s;">
+          <div class="planet planet--blue" style="--planet-angle:40deg;"></div>
         </div>
+        <div class="orbit orbit--2" style="--orbit-duration:31s; --orbit-delay:-8s;">
+          <div class="planet planet--cyan" style="--planet-angle:160deg;"></div>
+        </div>
+        <div class="orbit orbit--3" style="--orbit-duration:27s; --orbit-delay:-15s;">
+          <div class="planet planet--white" style="--planet-angle:280deg;"></div>
+        </div>
+        <div class="orbit orbit--4" style="--orbit-duration:38s; --orbit-delay:-5s;">
+          <div class="planet planet--purple" style="--planet-angle:70deg;"></div>
+        </div>
+        <div class="orbit orbit--5" style="--orbit-duration:44s; --orbit-delay:-20s;">
+          <div class="planet planet--blue" style="--planet-angle:220deg;"></div>
+        </div>
+      </div>
+      <div class="system-label">Технологии</div>
+      <div class="system-stats">
+        <span class="stat">↑ 42%</span>
+        <span class="stat-sub">AI Tools · DeFi</span>
+      </div>
+    </div>
 
-        <div class="sys-anchor eco-pos">
-            <div class="system-body" onclick="focusSystem(this)">
-                <div class="sun core-gold"></div>
-                <h3 class="sys-label">Экология</h3>
-                
-                <div class="orbit orb-1"><div class="planet mint p-angle-220"><div class="info"><span class="n">Solar</span><span class="v">9k</span></div></div></div>
-                <div class="orbit orb-2"><div class="planet azure p-angle-60"><div class="info"><span class="n">Recycle</span><span class="v">4k</span></div></div></div>
-            </div>
+    <!-- Система: Экология -->
+    <div class="star-system" id="sys-eco" data-system="eco" data-label="Экология">
+      <div class="system-core">
+        <div class="system-star system-star--green"></div>
+        <div class="system-glow system-glow--green"></div>
+        <!-- 2 орбиты -->
+        <div class="orbit orbit--1" style="--orbit-duration:29s; --orbit-delay:-12s;">
+          <div class="planet planet--green" style="--planet-angle:130deg;"></div>
+        </div>
+        <div class="orbit orbit--3" style="--orbit-duration:41s; --orbit-delay:-3s;">
+          <div class="planet planet--teal" style="--planet-angle:310deg;"></div>
+        </div>
+      </div>
+      <div class="system-label">Экология</div>
+      <div class="system-stats">
+        <span class="stat">↑ 18%</span>
+        <span class="stat-sub">CleanEnergy · Bio</span>
+      </div>
+    </div>
+
+    <!-- Система: Социум -->
+    <div class="star-system" id="sys-social" data-system="social" data-label="Социум">
+      <div class="system-core">
+        <div class="system-star system-star--gold"></div>
+        <div class="system-glow system-glow--gold"></div>
+        <!-- 4 орбиты -->
+        <div class="orbit orbit--1" style="--orbit-duration:25s; --orbit-delay:-6s;">
+          <div class="planet planet--gold" style="--planet-angle:200deg;"></div>
+        </div>
+        <div class="orbit orbit--2" style="--orbit-duration:33s; --orbit-delay:-18s;">
+          <div class="planet planet--orange" style="--planet-angle:60deg;"></div>
+        </div>
+        <div class="orbit orbit--3" style="--orbit-duration:22s; --orbit-delay:-9s;">
+          <div class="planet planet--white" style="--planet-angle:340deg;"></div>
+        </div>
+        <div class="orbit orbit--4" style="--orbit-duration:46s; --orbit-delay:-25s;">
+          <div class="planet planet--gold" style="--planet-angle:150deg;"></div>
+        </div>
+      </div>
+      <div class="system-label">Социум</div>
+      <div class="system-stats">
+        <span class="stat">↑ 31%</span>
+        <span class="stat-sub">B2B · Web3</span>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Панель деталей -->
+  <div class="detail-panel" id="detailPanel">
+    <button class="detail-close" id="detailClose">✕</button>
+    <div class="detail-content" id="detailContent"></div>
+  </div>
+
+  <!-- Хинт -->
+  <div class="hint-label" id="hintLabel">Нажмите на систему для фокуса</div>
+
+  <script src="script.js"></script>
+</body>
+</html>            </div>
         </div>
 
         <div class="sys-anchor social-pos">
