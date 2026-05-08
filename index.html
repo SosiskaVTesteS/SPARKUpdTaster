@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SPARK | Observatory</title>
+    <title>SPARK | Observatory v2</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -12,28 +12,38 @@
 
     <div class="galaxy-container">
 
-        <div class="cosmic-system system-tech" onclick="toggleSystem(this)">
-            <div class="central-star star-primary"></div>
-            <h3 class="system-title">Технологии</h3>
-            
-            <div class="orbit orbit-1">
-                <div class="planet p-top mint">
-                    <div class="planet-data">
-                        <span class="p-name">Искусственный интеллект</span>
-                        <span class="p-val">12,400 SPK</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="orbit orbit-2">
-                <div class="planet p-right azure">
-                    <div class="planet-data">
-                        <span class="p-name">Облачные вычисления</span>
-                        <span class="p-val">8,150 SPK</span>
-                    </div>
-                </div>
+        <div class="system-wrapper sys-1">
+            <div class="cosmic-system" onclick="toggleSystem(this)">
+                <div class="central-star star-gold"></div>
+                <h3 class="system-title">Технологии</h3>
+                <div class="orbit orbit-1"><div class="planet mint"><div class="planet-data"><span class="p-name">AI / ML</span><span class="p-val">12k SPK</span></div></div></div>
+                <div class="orbit orbit-2"><div class="planet azure"><div class="planet-data"><span class="p-name">Cloud</span><span class="p-val">8k SPK</span></div></div></div>
             </div>
         </div>
+
+        <div class="system-wrapper sys-2">
+            <div class="cosmic-system" onclick="toggleSystem(this)">
+                <div class="central-star star-gold"></div>
+                <h3 class="system-title">Экология</h3>
+                <div class="orbit orbit-1"><div class="planet mint"><div class="planet-data"><span class="p-name">Solar</span><span class="p-val">9k SPK</span></div></div></div>
+                <div class="orbit orbit-2"><div class="planet azure"><div class="planet-data"><span class="p-name">Recycle</span><span class="p-val">4k SPK</span></div></div></div>
+            </div>
+        </div>
+
+        <div class="system-wrapper sys-3">
+            <div class="cosmic-system" onclick="toggleSystem(this)">
+                <div class="central-star star-gold"></div>
+                <h3 class="system-title">Социум</h3>
+                <div class="orbit orbit-1"><div class="planet mint"><div class="planet-data"><span class="p-name">Education</span><span class="p-val">7k SPK</span></div></div></div>
+                <div class="orbit orbit-2"><div class="planet azure"><div class="planet-data"><span class="p-name">Charity</span><span class="p-val">3k SPK</span></div></div></div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
 
         <div class="cosmic-system system-eco" onclick="toggleSystem(this)">
             <div class="central-star star-secondary"></div>
