@@ -1,10 +1,5 @@
-/* ОБНУЛЕНИЕ АРТЕФАКТОВ */
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    border: none; /* Убираем все лишние рамки */
-    outline: none;
+    margin: 0; padding: 0; box-sizing: border-box;
 }
 
 body {
@@ -12,6 +7,7 @@ body {
     font-family: 'Inter', sans-serif;
     overflow: hidden;
     height: 100vh;
+    color: white;
 }
 
 .galaxy-canvas {
@@ -23,17 +19,151 @@ body {
     align-items: center;
 }
 
-/* ФИОЛЕТОВАЯ ЧЕРНАЯ ДЫРА */
+/* ЧЕРНАЯ ДЫРА - Фиксированный фиолетовый */
 .void-center {
     position: absolute;
-    width: 80px;
-    height: 80px;
-    background: radial-gradient(circle, #2d004d 0%, transparent 75%);
+    width: 100px;
+    height: 100px;
+    background: radial-gradient(circle, #3a007d 0%, #1a0035 40%, transparent 75%);
     border-radius: 50%;
     z-index: 1;
-    box-shadow: 0 0 80px 10px rgba(106, 13, 173, 0.4);
-    opacity: 0.7;
+    box-shadow: 0 0 100px 20px rgba(80, 0, 180, 0.4);
+    pointer-events: none;
 }
+
+/* ЗАТЕМНИТЕЛЬ */
+.space-dimmer {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.96);
+    backdrop-filter: blur(20px);
+    opacity: 0;
+    visibility: hidden;
+    transition: 0.8s ease;
+    z-index: 50;
+}
+.space-dimmer.active { opacity: 1; visibility: visible; }
+
+/* ЯКОРЯ СИСТЕМ */
+.sys-anchor {
+    position: absolute;
+    width: 350px; /* Увеличено для ПК */
+    height: 350px;
+    transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* ПОВОРОТ ТРЕУГОЛЬНИКА (ПК) */
+.pos-1 { transform: translate(-22vw, -30vh); }
+.pos-2 { transform: translate(30vw, -5vh); }
+.pos-3 { transform: translate(-10vw, 35vh); }
+
+/* АДАПТИВНОСТЬ ПОД ТЕЛЕФОНЫ */
+@media (max-width: 768px) {
+    .sys-anchor {
+        width: 250px; /* Меньше на мобилках */
+        height: 250px;
+    }
+    .pos-1 { transform: translate(-20vw, -32vh) scale(0.8); }
+    .pos-2 { transform: translate(25vw, 0vh) scale(0.8); }
+    .pos-3 { transform: translate(-10vw, 32vh) scale(0.8); }
+    .void-center { width: 60px; height: 60px; }
+}
+
+.sys-anchor.focused {
+    transform: translate(0, 0) scale(1.6);
+    z-index: 100;
+}
+
+/* ВНУТРЕННОСТИ */
+.system-body {
+    position: relative;
+    width: 100%; height: 100%;
+    cursor: pointer;
+}
+
+.sun {
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 40px; height: 40px;
+    background: #c5a021;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 30px rgba(197, 160, 33, 0.3);
+}
+
+/* ОРБИТЫ (Разные размеры) */
+.path {
+    position: absolute;
+    top: 50%; left: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+}
+.o-1 { width: 100px; height: 100px; }
+.o-2 { width: 160px; height: 160px; }
+.o-3 { width: 220px; height: 220px; }
+.o-4 { width: 280px; height: 280px; }
+.o-5 { width: 340px; height: 340px; }
+
+/* ПЛАНЕТЫ */
+.dot {
+    position: absolute;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    top: 50%; left: 50%;
+}
+.mint { background: #4fd1c5; box-shadow: 0 0 10px #4fd1c5; }
+.azure { background: #3d8b8d; box-shadow: 0 0 10px #3d8b8d; }
+
+/* УНИКАЛЬНОЕ ПОЗИЦИОНИРОВАНИЕ (Углы) */
+.p-45  { transform: rotate(45deg) translate(50px) rotate(-45deg); } /* Для орбиты 100px / 2 */
+.o-1 .p-45  { transform: rotate(45deg) translate(50px) rotate(-45deg); }
+.o-1 .p-90  { transform: rotate(90deg) translate(50px) rotate(-90deg); }
+.o-1 .p-220 { transform: rotate(220deg) translate(50px) rotate(-220deg); }
+
+.o-2 .p-180 { transform: rotate(180deg) translate(80px) rotate(-180deg); }
+.o-2 .p-45  { transform: rotate(45deg) translate(80px) rotate(-45deg); }
+.o-2 .p-270 { transform: rotate(270deg) translate(80px) rotate(-270deg); }
+
+.o-3 .p-300 { transform: rotate(300deg) translate(110px) rotate(-300deg); }
+.o-3 .p-10  { transform: rotate(10deg) translate(110px) rotate(-10deg); }
+
+.o-4 .p-10  { transform: rotate(10deg) translate(140px) rotate(-10deg); }
+.o-4 .p-160 { transform: rotate(160deg) translate(140px) rotate(-160deg); }
+
+.o-5 .p-120 { transform: rotate(120deg) translate(170px) rotate(-120deg); }
+
+/* ИНФО */
+.info {
+    position: absolute;
+    left: 15px; top: -10px;
+    background: #0a0c10;
+    border: 1px solid #c5a021;
+    padding: 6px 12px;
+    border-radius: 4px;
+    opacity: 0;
+    white-space: nowrap;
+    transition: 0.5s;
+}
+.focused .info { opacity: 1; transition-delay: 0.8s; }
+.n { display: block; font-size: 8px; color: #8b949e; text-transform: uppercase; }
+.v { display: block; font-size: 11px; color: #c5a021; font-weight: bold; }
+
+.sys-label {
+    position: absolute;
+    bottom: -30px; width: 100%;
+    text-align: center;
+    color: #c5a021;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    opacity: 0.5;
+}
+.focused .sys-label { opacity: 0; }
 
 /* ЗАТЕМНИТЕЛЬ */
 .space-dimmer {
