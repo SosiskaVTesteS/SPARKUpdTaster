@@ -1,54 +1,72 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>SPARK | Share Card Test</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPARK | Observatory</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <div class="test-area">
-        <button class="test-btn" onclick="openShare()">
-            <img src="https://img.icons8.com/ios-filled/50/e8c55a/sent.png" width="18">
-            Проверить дизайн Share-карточки
-        </button>
-    </div>
+    <div id="spaceDimmer" class="space-dimmer"></div>
 
-    <div id="shareModal" class="share-overlay" onclick="closeShare()">
-        <div class="share-card" onclick="event.stopPropagation()">
-            <div class="inner-glow"></div>
+    <div class="galaxy-container">
+
+        <div class="cosmic-system" onclick="toggleSystem(this)">
+            <div class="central-star tech-star"></div>
+            <h3 class="system-title tech-text">Технологии</h3>
             
-            <div class="share-content">
-                <div class="card-header">
-                    <div class="brand">
-                        <span class="logo-text">SPARK</span>
-                        <span class="slogan">Light Up The Future</span>
+            <div class="orbit orbit-1">
+                <div class="planet p-top tech-planet">
+                    <div class="planet-data">
+                        <span class="p-name">Искусственный интеллект</span>
+                        <span class="p-val">12,400 SPK</span>
                     </div>
                 </div>
-                
-                <h2 class="idea-title">Rooftop Solar Leasing</h2>
-                
-                <div class="author-block">
-                    <div class="avatar">M</div>
-                    <div class="author-info">
-                        <span class="label">Автор искры:</span>
-                        <span class="nick">@maria_builds</span>
-                    </div>
-                </div>
+            </div>
 
-                <p class="idea-desc">Zero upfront cost. Revenue from grid surplus. 15% bill reduction.</p>
-                
-                <div class="card-footer">
-                    <div class="stats">
-                        <p>Инвесторов: <span>184</span></p>
-                        <p>Пул: <span>7,200 SPK</span></p>
+            <div class="orbit orbit-2">
+                <div class="planet p-right tech-planet-dark">
+                    <div class="planet-data">
+                        <span class="p-name">Облачные сервисы</span>
+                        <span class="p-val">8,150 SPK</span>
                     </div>
-                    <div class="qr-wrapper">
-                        <img id="qrImg" src="" alt="QR">
+                </div>
+            </div>
+            
+            <div class="orbit orbit-3">
+                <div class="planet p-bottom tech-planet">
+                    <div class="planet-data">
+                        <span class="p-name">Web 3.0</span>
+                        <span class="p-val">5,200 SPK</span>
                     </div>
                 </div>
             </div>
         </div>
+
+        <div class="cosmic-system" onclick="toggleSystem(this)">
+            <div class="central-star eco-star"></div>
+            <h3 class="system-title eco-text">Эко-Инновации</h3>
+            
+            <div class="orbit orbit-1">
+                <div class="planet p-left eco-planet">
+                    <div class="planet-data">
+                        <span class="p-name">Солнечные панели</span>
+                        <span class="p-val">9,800 SPK</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="orbit orbit-2">
+                <div class="planet p-bottom eco-planet-dark">
+                    <div class="planet-data">
+                        <span class="p-name">Переработка пластика</span>
+                        <span class="p-val">4,300 SPK</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <script src="script.js"></script>
