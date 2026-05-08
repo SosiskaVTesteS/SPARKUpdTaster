@@ -1,39 +1,208 @@
+/* --- 1. ГЛОБАЛЬНЫЙ СБРОС (Убираем все артефакты) --- */
 * {
-    margin: 0; padding: 0; box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent; /* Убирает синее выделение на мобилках */
 }
 
 body {
     background: #05070a;
-    font-family: 'Inter', sans-serif;
+    font-family: 'Inter', -apple-system, sans-serif;
     overflow: hidden;
     height: 100vh;
-    color: white;
+    width: 100vw;
+    color: #fff;
 }
 
 .galaxy-canvas {
     position: relative;
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
+    perspective: 1000px;
 }
 
-/* ЧЕРНАЯ ДЫРА - Фиксированный фиолетовый */
+/* --- 2. ЦЕНТРАЛЬНАЯ ПУСТОТА (Черная дыра) --- */
 .void-center {
     position: absolute;
-    width: 100px;
-    height: 100px;
-    background: radial-gradient(circle, #3a007d 0%, #1a0035 40%, transparent 75%);
+    width: 120px;
+    height: 120px;
+    /* Тройной градиент для глубины и защиты от "желтизны" */
+    background: radial-gradient(circle, #4b0082 0%, #1a0033 50%, transparent 80%);
     border-radius: 50%;
     z-index: 1;
-    box-shadow: 0 0 100px 20px rgba(80, 0, 180, 0.4);
+    filter: blur(5px);
+    box-shadow: 0 0 80px 10px rgba(75, 0, 130, 0.5);
     pointer-events: none;
 }
 
-/* ЗАТЕМНИТЕЛЬ */
+/* --- 3. ЗАТЕМНИТЕЛЬ --- */
 .space-dimmer {
     position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.97);
+    backdrop-filter: blur(25px);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.8s ease, visibility 0.8s;
+    z-index: 50;
+}
+.space-dimmer.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* --- 4. ЯКОРЯ СИСТЕМ И ПОЗИЦИОНИРОВАНИЕ --- */
+.sys-anchor {
+    position: absolute;
+    width: 400px; /* Размер системы на ПК */
+    height: 400px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 1.2s cubic-bezier(0.2, 1, 0.3, 1);
+    z-index: 10;
+}
+
+/* Координаты для компьютера (Desktop) */
+.tech-pos   { transform: translate(-25vw, -30vh); }
+.eco-pos    { transform: translate(32vw, -5vh); }
+.social-pos { transform: translate(-12vw, 35vh); }
+
+/* АДАПТИВНОСТЬ ДЛЯ ТЕЛЕФОНОВ (Mobile) */
+@media (max-width: 768px) {
+    .sys-anchor {
+        width: 280px; /* Уменьшаем на смартфоне */
+        height: 280px;
+    }
+    /* Координаты для мобилок, чтобы не было наслоения */
+    .tech-pos   { transform: translate(-20vw, -33vh) scale(0.85); }
+    .eco-pos    { transform: translate(25vw, -5vh) scale(0.85); }
+    .social-pos { transform: translate(-15vw, 30vh) scale(0.85); }
+    
+    .void-center {
+        width: 80px;
+        height: 80px;
+    }
+}
+
+/* Эффект полета в центр при нажатии */
+.sys-anchor.focused {
+    transform: translate(0, 0) scale(1.5) !important;
+    z-index: 100;
+}
+
+/* --- 5. ВНУТРЕННЕЕ УСТРОЙСТВО СИСТЕМЫ --- */
+.system-body {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+}
+
+/* Солнце системы */
+.core-gold {
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 45px; height: 45px;
+    background: #c5a021;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 40px rgba(197, 160, 33, 0.4);
+}
+
+/* Орбиты */
+.orbit {
+    position: absolute;
+    top: 50%; left: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+}
+/* Размеры орбит для заполнения пространства */
+.orb-1 { width: 110px; height: 110px; }
+.orb-2 { width: 180px; height: 180px; }
+.orb-3 { width: 250px; height: 250px; }
+.orb-4 { width: 320px; height: 320px; }
+.orb-5 { width: 390px; height: 390px; }
+
+/* Планеты */
+.planet {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+}
+.mint { background: #4fd1c5; box-shadow: 0 0 15px rgba(79, 209, 197, 0.4); }
+.azure { background: #3d8b8d; box-shadow: 0 0 12px rgba(61, 139, 141, 0.3); }
+
+/* --- 6. УНИКАЛЬНОЕ РАСПОЛОЖЕНИЕ ПЛАНЕТ (УГЛЫ) --- */
+/* Формула: поворот контейнера -> вынос на радиус -> обратный поворот для текста */
+
+/* Орбита 1 (Радиус 55px) */
+.orb-1 .p-angle-45  { transform: rotate(45deg) translate(55px) rotate(-45deg); }
+.orb-1 .p-angle-90  { transform: rotate(90deg) translate(55px) rotate(-90deg); }
+.orb-1 .p-angle-220 { transform: rotate(220deg) translate(55px) rotate(-220deg); }
+
+/* Орбита 2 (Радиус 90px) */
+.orb-2 .p-angle-180 { transform: rotate(180deg) translate(90px) rotate(-180deg); }
+.orb-2 .p-angle-60  { transform: rotate(60deg) translate(90px) rotate(-60deg); }
+.orb-2 .p-angle-270 { transform: rotate(270deg) translate(90px) rotate(-270deg); }
+
+/* Орбита 3 (Радиус 125px) */
+.orb-3 .p-angle-300 { transform: rotate(300deg) translate(125px) rotate(-300deg); }
+.orb-3 .p-angle-15  { transform: rotate(15deg) translate(125px) rotate(-15deg); }
+
+/* Орбита 4 (Радиус 160px) */
+.orb-4 .p-angle-10  { transform: rotate(10deg) translate(160px) rotate(-10deg); }
+.orb-4 .p-angle-160 { transform: rotate(160deg) translate(160px) rotate(-160deg); }
+
+/* Орбита 5 (Радиус 195px) */
+.orb-5 .p-angle-120 { transform: rotate(120deg) translate(195px) rotate(-120deg); }
+
+/* --- 7. ИНФОРМАЦИОННЫЕ ПЛАШКИ --- */
+.info {
+    position: absolute;
+    left: 18px;
+    top: -5px;
+    background: #0d1117;
+    border: 1px solid rgba(197, 160, 33, 0.4);
+    padding: 6px 12px;
+    border-radius: 6px;
+    opacity: 0;
+    transform: translateX(10px);
+    transition: 0.6s ease;
+    pointer-events: none;
+    white-space: nowrap;
+}
+.focused .info {
+    opacity: 1;
+    transform: translateX(0);
+    transition-delay: 0.8s;
+}
+
+.n { color: #8b949e; display: block; font-size: 9px; text-transform: uppercase; font-weight: 700; letter-spacing: 1px; }
+.v { color: #c5a021; font-size: 11px; font-weight: 800; display: block; margin-top: 2px; }
+
+/* Подписи систем */
+.sys-label {
+    position: absolute;
+    bottom: -40px;
+    width: 100%;
+    text-align: center;
+    color: #c5a021;
+    font-size: 11px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    opacity: 0.5;
+    transition: opacity 0.4s;
+}
+.focused .sys-label { opacity: 0; }
     inset: 0;
     background: rgba(0, 0, 0, 0.96);
     backdrop-filter: blur(20px);
