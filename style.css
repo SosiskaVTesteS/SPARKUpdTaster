@@ -1,39 +1,147 @@
-body {
-    background: #05070a;
+/* ОБНУЛЕНИЕ АРТЕФАКТОВ */
+* {
     margin: 0;
-    font-family: 'Inter', sans-serif;
-    overflow: hidden;
+    padding: 0;
+    box-sizing: border-box;
+    border: none; /* Убираем все лишние рамки */
+    outline: none;
 }
 
-.galaxy-container {
+body {
+    background: #05070a;
+    font-family: 'Inter', sans-serif;
+    overflow: hidden;
+    height: 100vh;
+}
+
+.galaxy-canvas {
     position: relative;
     width: 100vw;
     height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    /* Убираем любые лишние рамки и контуры */
-    border: none;
-    outline: none;
 }
 
-/* ЦЕНТРАЛЬНАЯ ФИОЛЕТОВАЯ ЗВЕЗДА (ЧЕРНАЯ ДЫРА) */
-.central-void {
+/* ФИОЛЕТОВАЯ ЧЕРНАЯ ДЫРА */
+.void-center {
     position: absolute;
-    width: 60px;
-    height: 60px;
-    background: radial-gradient(circle, #2d004d 0%, #05070a 80%);
+    width: 80px;
+    height: 80px;
+    background: radial-gradient(circle, #2d004d 0%, transparent 75%);
     border-radius: 50%;
     z-index: 1;
-    /* Мягкий фиолетовый градиентный контур */
-    box-shadow: 0 0 100px 20px rgba(106, 13, 173, 0.3), 
-                inset 0 0 20px rgba(0, 0, 0, 1);
-    opacity: 0.8;
+    box-shadow: 0 0 80px 10px rgba(106, 13, 173, 0.4);
+    opacity: 0.7;
 }
 
-/* Затемнитель */
+/* ЗАТЕМНИТЕЛЬ */
 .space-dimmer {
     position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.95);
+    backdrop-filter: blur(15px);
+    opacity: 0;
+    visibility: hidden;
+    transition: 0.8s ease;
+    z-index: 50;
+}
+.space-dimmer.active { opacity: 1; visibility: visible; }
+
+/* ЯКОРЯ ДЛЯ СИСТЕМ (ПОВОРОТ НА 30 ГРАДУСОВ) */
+.sys-anchor {
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Расчет координат с учетом поворота */
+.pos-1 { transform: translate(-15vw, -35vh); }
+.pos-2 { transform: translate(35vw, 0vh); }
+.pos-3 { transform: translate(-10vw, 35vh); }
+
+/* ФОКУС: Перелет в центр */
+.sys-anchor.focused {
+    transform: translate(0, 0) scale(1.8);
+    z-index: 100;
+}
+
+/* ВНУТРЕННОСТИ СИСТЕМЫ */
+.system-body {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+}
+
+.sun {
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 30px; height: 30px;
+    background: #c5a021;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 30px rgba(197, 160, 33, 0.2);
+}
+
+.path {
+    position: absolute;
+    top: 50%; left: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+}
+.path-1 { width: 100px; height: 100px; }
+.path-2 { width: 180px; height: 180px; }
+
+.dot {
+    position: absolute;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+}
+.mint { background: #4fd1c5; box-shadow: 0 0 10px rgba(79, 209, 197, 0.3); }
+.azure { background: #3d8b8d; box-shadow: 0 0 10px rgba(61, 139, 141, 0.2); }
+
+/* Точки планет */
+.path-1 .dot { top: -4px; left: 50%; transform: translateX(-50%); }
+.path-2 .dot { bottom: -4px; left: 50%; transform: translateX(-50%); }
+
+/* ИНФО-ПЛАШКИ */
+.info {
+    position: absolute;
+    left: 15px; top: -5px;
+    background: #0a0c10;
+    border: 1px solid rgba(197, 160, 33, 0.3);
+    padding: 5px 10px;
+    border-radius: 4px;
+    opacity: 0;
+    transform: translateX(10px);
+    transition: 0.5s ease;
+    pointer-events: none;
+}
+.focused .info { opacity: 1; transform: translateX(0); transition-delay: 0.8s; }
+
+.n { color: #8b949e; display: block; font-size: 7px; text-transform: uppercase; letter-spacing: 1px; }
+.v { color: #c5a021; font-size: 10px; font-weight: bold; }
+
+/* ТЕКСТ ПОД СИСТЕМОЙ */
+.sys-label {
+    position: absolute;
+    bottom: 40px; width: 100%;
+    text-align: center;
+    color: #c5a021;
+    font-size: 9px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    opacity: 0.4;
+    transition: 0.3s;
+}
+.focused .sys-label { opacity: 0; }
     inset: 0;
     background: rgba(0, 0, 0, 0.92);
     backdrop-filter: blur(12px);
