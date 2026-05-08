@@ -12,12 +12,12 @@
 
     <div class="galaxy-container">
 
-        <div class="cosmic-system" onclick="toggleSystem(this)">
-            <div class="central-star tech-star"></div>
-            <h3 class="system-title tech-text">Технологии</h3>
+        <div class="cosmic-system system-tech" onclick="toggleSystem(this)">
+            <div class="central-star star-primary"></div>
+            <h3 class="system-title">Технологии</h3>
             
             <div class="orbit orbit-1">
-                <div class="planet p-top tech-planet">
+                <div class="planet p-top mint">
                     <div class="planet-data">
                         <span class="p-name">Искусственный интеллект</span>
                         <span class="p-val">12,400 SPK</span>
@@ -26,14 +26,43 @@
             </div>
 
             <div class="orbit orbit-2">
-                <div class="planet p-right tech-planet-dark">
+                <div class="planet p-right azure">
                     <div class="planet-data">
-                        <span class="p-name">Облачные сервисы</span>
+                        <span class="p-name">Облачные вычисления</span>
                         <span class="p-val">8,150 SPK</span>
                     </div>
                 </div>
             </div>
+        </div>
+
+        <div class="cosmic-system system-eco" onclick="toggleSystem(this)">
+            <div class="central-star star-secondary"></div>
+            <h3 class="system-title">Инновации</h3>
             
+            <div class="orbit orbit-1">
+                <div class="planet p-left mint">
+                    <div class="planet-data">
+                        <span class="p-name">Зеленая энергия</span>
+                        <span class="p-val">9,800 SPK</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="orbit orbit-2">
+                <div class="planet p-bottom azure">
+                    <div class="planet-data">
+                        <span class="p-name">Zero Waste</span>
+                        <span class="p-val">4,300 SPK</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
             <div class="orbit orbit-3">
                 <div class="planet p-bottom tech-planet">
                     <div class="planet-data">
