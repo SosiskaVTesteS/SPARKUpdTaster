@@ -2,39 +2,121 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>SPARK Observatory</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <!-- Звёздный фон -->
   <canvas id="starfield"></canvas>
-
-  <!-- Туманность (nebula) -->
   <div class="nebula"></div>
-
-  <!-- Затемнитель при фокусе -->
   <div class="space-dimmer" id="dimmer"></div>
 
-  <!-- Основной контейнер -->
-  <main class="observatory-grid" id="observatory">
+  <main class="observatory" id="observatory">
 
-    <!-- Центральная чёрная дыра -->
+    <!-- ═══ BLACK HOLE (centre) ═══ -->
     <div class="black-hole" id="blackHole">
+      <div class="bh-accretion"></div>
+      <div class="bh-ring" style="--s:170px;--op:0.13;--d:0s"></div>
+      <div class="bh-ring" style="--s:130px;--op:0.18;--d:-2s"></div>
+      <div class="bh-ring" style="--s: 96px;--op:0.24;--d:-4s"></div>
       <div class="bh-core"></div>
-      <div class="bh-ring bh-ring--1"></div>
-      <div class="bh-ring bh-ring--2"></div>
-      <div class="bh-ring bh-ring--3"></div>
-      <div class="bh-pulse"></div>
-      <div class="bh-label">SPARK<br><span>Observatory</span></div>
+      <div class="bh-label">
+        <span class="bh-spark">SPARK</span>
+        <span class="bh-sub">Observatory</span>
+      </div>
     </div>
 
-    <!-- Система: Технологии -->
-    <div class="star-system" id="sys-tech" data-system="tech" data-label="Технологии">
+    <!-- ═══ SYSTEM: ТЕХНОЛОГИИ (left) ═══ -->
+    <!--
+      Орбиты: 1=ближайшая(самая значимая) … 5=дальняя
+      Подтемы по убыванию важности: AI Tools → DeFi → Web3 → Hardware → CleanTech(eco-planet)
+    -->
+    <div class="star-system" id="sys-tech" data-system="tech">
+      <div class="system-wrap">
+        <!-- орбита 1 — AI Tools -->
+        <div class="orbit" style="--od:22s;--delay:-3s;--r:28px;">
+          <div class="planet planet--cyan" data-label="AI Tools"></div>
+        </div>
+        <!-- орбита 2 — DeFi -->
+        <div class="orbit" style="--od:31s;--delay:-11s;--r:46px;">
+          <div class="planet planet--blue" data-label="DeFi"></div>
+        </div>
+        <!-- орбита 3 — Web3 -->
+        <div class="orbit" style="--od:27s;--delay:-18s;--r:64px;">
+          <div class="planet planet--purple" data-label="Web3"></div>
+        </div>
+        <!-- орбита 4 — Hardware -->
+        <div class="orbit" style="--od:38s;--delay:-6s;--r:82px;">
+          <div class="planet planet--white" data-label="Hardware"></div>
+        </div>
+        <!-- орбита 5 — CleanTech (бывшая Эко) -->
+        <div class="orbit" style="--od:47s;--delay:-22s;--r:100px;">
+          <div class="planet planet--green" data-label="CleanTech"></div>
+        </div>
+
+        <div class="system-star star--blue"></div>
+        <div class="system-glow glow--blue"></div>
+      </div>
+
+      <div class="system-nameplate">
+        <span class="sys-name">Технологии</span>
+        <span class="sys-trend">↑ 42%</span>
+      </div>
+    </div>
+
+    <!-- ═══ SYSTEM: СОЦИУМ (right) ═══ -->
+    <!--
+      Подтемы: B2B SaaS → Marketplace → EdTech → DAO
+    -->
+    <div class="star-system" id="sys-social" data-system="social">
+      <div class="system-wrap">
+        <!-- орбита 1 — B2B SaaS -->
+        <div class="orbit" style="--od:25s;--delay:-7s;--r:28px;">
+          <div class="planet planet--gold" data-label="B2B SaaS"></div>
+        </div>
+        <!-- орбита 2 — Marketplace -->
+        <div class="orbit" style="--od:34s;--delay:-19s;--r:46px;">
+          <div class="planet planet--orange" data-label="Marketplace"></div>
+        </div>
+        <!-- орбита 3 — EdTech -->
+        <div class="orbit" style="--od:43s;--delay:-4s;--r:64px;">
+          <div class="planet planet--white" data-label="EdTech"></div>
+        </div>
+        <!-- орбита 4 — DAO -->
+        <div class="orbit" style="--od:29s;--delay:-14s;--r:82px;">
+          <div class="planet planet--purple" data-label="DAO"></div>
+        </div>
+
+        <div class="system-star star--gold"></div>
+        <div class="system-glow glow--gold"></div>
+      </div>
+
+      <div class="system-nameplate">
+        <span class="sys-name">Социум</span>
+        <span class="sys-trend">↑ 31%</span>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Detail side panel -->
+  <aside class="detail-panel" id="detailPanel" aria-hidden="true">
+    <button class="detail-close" id="detailClose" aria-label="Закрыть">✕</button>
+    <div id="detailContent"></div>
+  </aside>
+
+  <!-- Planet tooltip (shared, moved by JS) -->
+  <div class="planet-tooltip" id="planetTooltip"></div>
+
+  <div class="hint" id="hint">Выберите систему для исследования</div>
+
+  <script src="script.js"></script>
+</body>
+</html>    <div class="star-system" id="sys-tech" data-system="tech" data-label="Технологии">
       <div class="system-core">
         <div class="system-star"></div>
         <div class="system-glow"></div>
