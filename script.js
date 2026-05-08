@@ -1,22 +1,21 @@
-function toggleSystem(element) {
-    const wrapper = element.parentElement;
+function focusSystem(element) {
+    const anchor = element.closest('.sys-anchor');
     const dimmer = document.getElementById('spaceDimmer');
     
-    if (wrapper.classList.contains('focused')) {
-        wrapper.classList.remove('focused');
+    if (anchor.classList.contains('focused')) {
+        anchor.classList.remove('focused');
         dimmer.classList.remove('active');
     } else {
-        document.querySelectorAll('.system-wrapper').forEach(sys => {
-            sys.classList.remove('focused');
-        });
-        wrapper.classList.add('focused');
+        // Чистим фокус у всех
+        document.querySelectorAll('.sys-anchor').forEach(el => el.classList.remove('focused'));
+        // Ставим фокус на текущую
+        anchor.classList.add('focused');
         dimmer.classList.add('active');
     }
 }
 
+// Закрытие по фону
 document.getElementById('spaceDimmer').onclick = function() {
     this.classList.remove('active');
-    document.querySelectorAll('.system-wrapper').forEach(sys => {
-        sys.classList.remove('focused');
-    });
+    document.querySelectorAll('.sys-anchor').forEach(el => el.classList.remove('focused'));
 };
