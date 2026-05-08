@@ -1,39 +1,150 @@
+/* Базовые настройки космоса */
 body {
     background: #05070a;
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    overflow: hidden; /* Убираем скролл */
+}
+
+.galaxy-container {
     display: flex;
     justify-content: center;
     align-items: center;
+    gap: 150px; /* Расстояние между системами */
     height: 100vh;
-    margin: 0;
-    font-family: 'Inter', -apple-system, sans-serif;
+    padding: 50px;
 }
 
-.share-overlay {
+/* Затемнитель фона */
+.space-dimmer {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.85);
-    backdrop-filter: blur(12px);
-    display: none;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(5px);
     opacity: 0;
-    transition: 0.4s ease;
+    visibility: hidden;
+    transition: all 0.8s ease;
+    z-index: 5;
 }
 
-.share-overlay.active { display: flex; opacity: 1; }
+.space-dimmer.active {
+    opacity: 1;
+    visibility: visible;
+    cursor: pointer;
+}
 
-.share-card {
-    width: 340px;
-    background: #0d1117;
-    border-radius: 30px;
+/* Сама космическая система */
+.cosmic-system {
     position: relative;
-    padding: 2px;
-    transform: scale(0.9);
-    transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.2);
+    width: 300px;
+    height: 300px;
+    cursor: pointer;
+    transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+    z-index: 10;
 }
 
-.share-overlay.active .share-card { transform: scale(1); }
+/* Эффект при наведении (до клика) */
+.cosmic-system:hover:not(.focused) {
+    transform: scale(1.05);
+}
+
+/* ФОКУС: Выдвижение вперед при клике */
+.cosmic-system.focused {
+    transform: scale(1.7);
+    z-index: 100;
+}
+
+/* --- ЗВЕЗДЫ --- */
+.central-star {
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 45px; height: 45px;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+}
+/* Цвета Технологий (Золото) */
+.tech-star { background: #C5A021; box-shadow: 0 0 40px rgba(197, 160, 33, 0.5); }
+.tech-text { color: #C5A021; }
+/* Цвета Экологии (Охра/Бронза) */
+.eco-star { background: #d97736; box-shadow: 0 0 40px rgba(217, 119, 54, 0.5); }
+.eco-text { color: #d97736; }
+
+/* Название системы */
+.system-title {
+    position: absolute;
+    bottom: -30px;
+    width: 100%;
+    text-align: center;
+    font-size: 14px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    transition: opacity 0.3s;
+}
+/* Прячем название, когда система раскрыта */
+.cosmic-system.focused .system-title { opacity: 0; }
+
+/* --- ОРБИТЫ --- */
+.orbit {
+    position: absolute;
+    top: 50%; left: 50%;
+    border: 1px dashed rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+}
+.orbit-1 { width: 130px; height: 130px; }
+.orbit-2 { width: 200px; height: 200px; }
+.orbit-3 { width: 270px; height: 270px; }
+
+/* --- ПЛАНЕТЫ --- */
+.planet {
+    position: absolute;
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    box-shadow: 0 0 10px currentColor;
+}
+/* Позиции планет на орбитах */
+.p-top { top: -6px; left: calc(50% - 6px); }
+.p-bottom { bottom: -6px; left: calc(50% - 6px); }
+.p-left { left: -6px; top: calc(50% - 6px); }
+.p-right { right: -6px; top: calc(50% - 6px); }
+
+/* Цвета планет */
+.tech-planet { background: #4fd1c5; color: #4fd1c5; }
+.tech-planet-dark { background: #2b7a73; color: #2b7a73; }
+.eco-planet { background: #4caf50; color: #4caf50; }
+.eco-planet-dark { background: #2e6b30; color: #2e6b30; }
+
+/* --- ДАННЫЕ ПЛАНЕТ --- */
+.planet-data {
+    position: absolute;
+    left: 20px;
+    top: -10px;
+    background: rgba(13, 17, 23, 0.8);
+    border-radius: 6px;
+    padding: 6px 10px;
+    border: 1px solid rgba(255,255,255,0.1);
+    white-space: nowrap;
+    opacity: 0;
+    transform: translateX(15px);
+    transition: all 0.5s ease;
+    pointer-events: none;
+}
+
+/* Проявление данных ТОЛЬКО когда система в фокусе */
+.cosmic-system.focused .planet-data {
+    opacity: 1;
+    transform: translateX(0);
+    transition-delay: 0.5s; /* Выезжают после увеличения системы */
+}
+
+.p-name { 
+    color: white; display: block; font-size: 9px; 
+    font-weight: bold; text-transform: uppercase; margin-bottom: 2px;
+}
+.p-val { font-size: 10px; font-weight: bold; }
+/* Цвет цифр зависит от родителя */
+.tech-planet .p-val, .tech-planet-dark .p-val { color: #4fd1c5; }
+.eco-planet .p-val, .eco-planet-dark .p-val { color: #4caf50; }
 
 /* Двухцветная рамка: Золото / Мята */
 .share-card::before {
