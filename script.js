@@ -1,20 +1,27 @@
-function openShare() {
-    const modal = document.getElementById('shareModal');
-    const qrImg = document.getElementById('qrImg');
+function toggleSystem(clickedSystem) {
+    const dimmer = document.getElementById('spaceDimmer');
+    const allSystems = document.querySelectorAll('.cosmic-system');
     
-    // Ссылка на проект (замени на свою)
-    const targetUrl = "https://github.com/SPARK";
-    
-    // Генерируем QR в золотом цвете (#e8c55a -> color=e8c55a)
-    // bgcolor=0d1117 делает фон QR таким же, как у карточки
-    qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${targetUrl}&color=e8c55a&bgcolor=0d1117`;
-    
-    modal.style.display = 'flex';
-    setTimeout(() => modal.classList.add('active'), 10);
+    // Если кликнули на систему, которая уже открыта — закрываем её
+    if (clickedSystem.classList.contains('focused')) {
+        clickedSystem.classList.remove('focused');
+        dimmer.classList.remove('active');
+    } 
+    // Если кликнули на новую систему
+    else {
+        // 1. Закрываем все остальные системы
+        allSystems.forEach(sys => sys.classList.remove('focused'));
+        
+        // 2. Открываем ту, на которую кликнули
+        clickedSystem.classList.add('focused');
+        
+        // 3. Включаем затемнение фона
+        dimmer.classList.add('active');
+    }
 }
 
-function closeShare() {
-    const modal = document.getElementById('shareModal');
-    modal.classList.remove('active');
-    setTimeout(() => modal.style.display = 'none', 400);
-}
+// Если кликнуть по темному фону вокруг системы — всё закрывается
+document.getElementById('spaceDimmer').addEventListener('click', function() {
+    this.classList.remove('active');
+    document.querySelectorAll('.cosmic-system').forEach(sys => sys.classList.remove('focused'));
+});
