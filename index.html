@@ -3,38 +3,346 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#010109">
   <title>SPARK Observatory</title>
+
+  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <canvas id="starfield"></canvas>
-  <div class="nebula"></div>
-  <div class="space-dimmer" id="dimmer"></div>
+  <!-- ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+       LAYER 0 — Starfield canvas (z-index: 0)
+       Animated via JS: twinkling state-machine per star
+  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+  <canvas id="starfield" aria-hidden="true"></canvas>
 
-  <main class="observatory" id="observatory">
+  <!-- ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+       LAYER 1 — Nebula atmosphere (z-index: 1)
+       Pure CSS radial gradients, slow drift animation
+  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+  <div class="nebula" aria-hidden="true"></div>
 
-    <!-- ═══ BLACK HOLE (centre) ═══ -->
-    <div class="black-hole" id="blackHole">
-      <div class="bh-accretion"></div>
-      <div class="bh-ring" style="--s:170px;--op:0.13;--d:0s"></div>
-      <div class="bh-ring" style="--s:130px;--op:0.18;--d:-2s"></div>
-      <div class="bh-ring" style="--s: 96px;--op:0.24;--d:-4s"></div>
-      <div class="bh-core"></div>
-      <div class="bh-label">
-        <span class="bh-spark">SPARK</span>
-        <span class="bh-sub">Observatory</span>
+  <!-- ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+       LAYER 2 — Observatory grid (z-index: 2–3)
+       Desktop: CSS Grid 60×45
+       Mobile:  CSS Grid 20×30
+  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+  <main class="obs" id="obs" role="main">
+
+    <!-- ╔══════════════════════════════════════════╗
+         ║  BLACK HOLE — centre anchor              ║
+         ║  Desktop: col 27–34 / row 19–27          ║
+         ║  Mobile:  col  8–13 / row 13–18          ║
+         ╚══════════════════════════════════════════╝ -->
+    <div class="black-hole" id="bh" aria-label="Центральная чёрная дыра SPARK" role="img">
+
+      <!-- Accretion disc — slow conic-gradient spin -->
+      <div class="bh-accretion" aria-hidden="true"></div>
+
+      <!-- Pulsing atmosphere rings (3 layers, staggered delay) -->
+      <div class="bh-ring" style="--rs:178px; --ro:.09; --rd:0s"    aria-hidden="true"></div>
+      <div class="bh-ring" style="--rs:136px; --ro:.15; --rd:-2.4s" aria-hidden="true"></div>
+      <div class="bh-ring" style="--rs: 98px; --ro:.23; --rd:-4.8s" aria-hidden="true"></div>
+
+      <!-- Core singularity -->
+      <div class="bh-core" aria-hidden="true"></div>
+
+      <!-- Label below core -->
+      <div class="bh-label" aria-hidden="true">
+        <b class="bh-spark">SPARK</b>
+        <span class="bh-obs">Observatory</span>
       </div>
-    </div>
 
-    <!-- ═══ SYSTEM: ТЕХНОЛОГИИ (left) ═══ -->
-    <!--
-      Орбиты: 1=ближайшая(самая значимая) … 5=дальняя
-      Подтемы по убыванию важности: AI Tools → DeFi → Web3 → Hardware → CleanTech(eco-planet)
-    -->
+    </div><!-- /.black-hole -->
+
+
+    <!-- ╔══════════════════════════════════════════╗
+         ║  SYSTEM: ТЕХНОЛОГИИ  — top centre        ║
+         ║  Desktop: col 24–38 / row  2–17          ║
+         ║  Mobile:  col  4–17 / row  1–12          ║
+         ║                                          ║
+         ║  5 orbits, closest = most significant:   ║
+         ║  1. AI Tools  (orbit r=30) ← самая важная║
+         ║  2. DeFi      (orbit r=50)               ║
+         ║  3. Web3      (orbit r=70)               ║
+         ║  4. Hardware  (orbit r=90)               ║
+         ║  5. CleanTech (orbit r=110) ← бывшая Эко ║
+         ╚══════════════════════════════════════════╝ -->
+    <article
+      class="sys"
+      id="sys-tech"
+      data-key="tech"
+      aria-label="Система Технологии"
+      role="button"
+      tabindex="0"
+    >
+      <div class="sys-inner" data-max-r="110">
+
+        <!-- Orbit 1 — AI Tools (ближайшая, самая значимая) -->
+        <div class="orb"
+          style="--od:22s; --dl:-3s;  --or:30px"
+          data-base-r="30"
+          data-label="AI Tools"
+          aria-hidden="true"
+        >
+          <div class="planet p-cyan"   aria-label="AI Tools"></div>
+        </div>
+
+        <!-- Orbit 2 — DeFi -->
+        <div class="orb"
+          style="--od:31s; --dl:-11s; --or:50px"
+          data-base-r="50"
+          data-label="DeFi"
+          aria-hidden="true"
+        >
+          <div class="planet p-blue"   aria-label="DeFi"></div>
+        </div>
+
+        <!-- Orbit 3 — Web3 -->
+        <div class="orb"
+          style="--od:27s; --dl:-19s; --or:70px"
+          data-base-r="70"
+          data-label="Web3"
+          aria-hidden="true"
+        >
+          <div class="planet p-purple" aria-label="Web3"></div>
+        </div>
+
+        <!-- Orbit 4 — Hardware -->
+        <div class="orb"
+          style="--od:41s; --dl:-6s;  --or:90px"
+          data-base-r="90"
+          data-label="Hardware"
+          aria-hidden="true"
+        >
+          <div class="planet p-white"  aria-label="Hardware"></div>
+        </div>
+
+        <!-- Orbit 5 — CleanTech (дальняя, бывшая «Эко») -->
+        <div class="orb"
+          style="--od:50s; --dl:-25s; --or:110px"
+          data-base-r="110"
+          data-label="CleanTech"
+          aria-hidden="true"
+        >
+          <div class="planet p-green"  aria-label="CleanTech"></div>
+        </div>
+
+        <!-- Star centre + halo -->
+        <div class="sys-star s-blue"  aria-hidden="true"></div>
+        <div class="sys-glow g-blue"  aria-hidden="true"></div>
+
+      </div><!-- /.sys-inner -->
+
+      <!-- Nameplate (label + trend) -->
+      <div class="sys-plate" aria-hidden="true">
+        <span class="sys-name">Технологии</span>
+        <span class="sys-pct">↑ 42%</span>
+      </div>
+
+    </article><!-- /#sys-tech -->
+
+
+    <!-- ╔══════════════════════════════════════════╗
+         ║  SYSTEM: СОЦИУМ — bottom-left            ║
+         ║  Desktop: col  8–23 / row 30–46          ║
+         ║  Mobile:  col  1–10 / row 19–31          ║
+         ║                                          ║
+         ║  4 orbits:                               ║
+         ║  1. B2B SaaS  (r=30) ← топ               ║
+         ║  2. Marketplace (r=50)                   ║
+         ║  3. EdTech    (r=70)                     ║
+         ║  4. DAO       (r=90) ← наименее значим   ║
+         ╚══════════════════════════════════════════╝ -->
+    <article
+      class="sys"
+      id="sys-social"
+      data-key="social"
+      aria-label="Система Социум"
+      role="button"
+      tabindex="0"
+    >
+      <div class="sys-inner" data-max-r="90">
+
+        <!-- Orbit 1 — B2B SaaS -->
+        <div class="orb"
+          style="--od:25s; --dl:-7s;  --or:30px"
+          data-base-r="30"
+          data-label="B2B SaaS"
+          aria-hidden="true"
+        >
+          <div class="planet p-gold"   aria-label="B2B SaaS"></div>
+        </div>
+
+        <!-- Orbit 2 — Marketplace -->
+        <div class="orb"
+          style="--od:35s; --dl:-20s; --or:50px"
+          data-base-r="50"
+          data-label="Marketplace"
+          aria-hidden="true"
+        >
+          <div class="planet p-orange" aria-label="Marketplace"></div>
+        </div>
+
+        <!-- Orbit 3 — EdTech -->
+        <div class="orb"
+          style="--od:45s; --dl:-4s;  --or:70px"
+          data-base-r="70"
+          data-label="EdTech"
+          aria-hidden="true"
+        >
+          <div class="planet p-white"  aria-label="EdTech"></div>
+        </div>
+
+        <!-- Orbit 4 — DAO -->
+        <div class="orb"
+          style="--od:29s; --dl:-15s; --or:90px"
+          data-base-r="90"
+          data-label="DAO"
+          aria-hidden="true"
+        >
+          <div class="planet p-purple" aria-label="DAO"></div>
+        </div>
+
+        <div class="sys-star s-gold"  aria-hidden="true"></div>
+        <div class="sys-glow g-gold"  aria-hidden="true"></div>
+
+      </div><!-- /.sys-inner -->
+
+      <div class="sys-plate" aria-hidden="true">
+        <span class="sys-name">Социум</span>
+        <span class="sys-pct">↑ 31%</span>
+      </div>
+
+    </article><!-- /#sys-social -->
+
+
+    <!-- ╔══════════════════════════════════════════╗
+         ║  SYSTEM: ФИНАНСЫ — bottom-right          ║
+         ║  Desktop: col 39–54 / row 30–46          ║
+         ║  Mobile:  col 11–20 / row 19–31          ║
+         ║                                          ║
+         ║  3 orbits:                               ║
+         ║  1. Venture     (r=30) ← топ              ║
+         ║  2. Crypto      (r=50)                   ║
+         ║  3. Tokenomics  (r=70) ← наименее значим ║
+         ╚══════════════════════════════════════════╝ -->
+    <article
+      class="sys"
+      id="sys-fin"
+      data-key="fin"
+      aria-label="Система Финансы"
+      role="button"
+      tabindex="0"
+    >
+      <div class="sys-inner" data-max-r="70">
+
+        <!-- Orbit 1 — Venture -->
+        <div class="orb"
+          style="--od:23s; --dl:-9s;  --or:30px"
+          data-base-r="30"
+          data-label="Venture"
+          aria-hidden="true"
+        >
+          <div class="planet p-rose"   aria-label="Venture"></div>
+        </div>
+
+        <!-- Orbit 2 — Crypto -->
+        <div class="orb"
+          style="--od:33s; --dl:-17s; --or:50px"
+          data-base-r="50"
+          data-label="Crypto"
+          aria-hidden="true"
+        >
+          <div class="planet p-cyan"   aria-label="Crypto"></div>
+        </div>
+
+        <!-- Orbit 3 — Tokenomics -->
+        <div class="orb"
+          style="--od:43s; --dl:-2s;  --or:70px"
+          data-base-r="70"
+          data-label="Tokenomics"
+          aria-hidden="true"
+        >
+          <div class="planet p-purple" aria-label="Tokenomics"></div>
+        </div>
+
+        <div class="sys-star s-rose"  aria-hidden="true"></div>
+        <div class="sys-glow g-rose"  aria-hidden="true"></div>
+
+      </div><!-- /.sys-inner -->
+
+      <div class="sys-plate" aria-hidden="true">
+        <span class="sys-name">Финансы</span>
+        <span class="sys-pct">↑ 55%</span>
+      </div>
+
+    </article><!-- /#sys-fin -->
+
+  </main><!-- /.obs -->
+
+
+  <!-- ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+       LAYER 10 — Dimmer overlay
+       Covers everything EXCEPT .sys.focused (z-index: 50)
+       Click on dimmer → closeSystem()
+  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+  <div class="dimmer" id="dimmer" aria-hidden="true"></div>
+
+
+  <!-- ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+       LAYER 60 — Detail panel
+       Desktop: slides in from right (290px wide)
+       Mobile:  slides up as bottom sheet (56vh)
+  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+  <aside
+    class="dpanel"
+    id="dpanel"
+    aria-hidden="true"
+    aria-label="Детали системы"
+    role="complementary"
+  >
+    <button
+      class="dpanel-close"
+      id="dpanel-close"
+      aria-label="Закрыть панель"
+      type="button"
+    >✕</button>
+
+    <!-- Content injected by JS via renderDetail(key) -->
+    <div id="dpanel-body" role="region" aria-live="polite"></div>
+  </aside>
+
+
+  <!-- ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+       LAYER 100 — Planet tooltip
+       Shared floating element, positioned by JS on
+       mousemove (desktop) or touchstart (mobile)
+  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+  <div
+    class="ptip"
+    id="ptip"
+    role="tooltip"
+    aria-hidden="true"
+  ></div>
+
+
+  <!-- ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+       UI hint — fades out after first interaction
+  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+  <p class="hint" id="hint" aria-hidden="true">
+    Выберите систему для исследования
+  </p>
+
+
+  <script src="script.js"></script>
+</body>
+</html>    -->
     <div class="star-system" id="sys-tech" data-system="tech">
       <div class="system-wrap">
         <!-- орбита 1 — AI Tools -->
