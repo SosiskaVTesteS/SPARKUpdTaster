@@ -1,40 +1,800 @@
-/* ═══════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════════════
    SPARK Observatory — style.css
-   Desktop: CSS Grid 60×45, systems left/right of BH
-   Mobile:  CSS Grid 20×22, stacked safely
-   ═══════════════════════════════════════════════════════ */
+   ───────────────────────────────────────────────────────────────
+   Desktop grid : 60 × 45
+     BH      col 27–34 / row 19–27   (centre)
+     Tech    col 24–38 / row  2–17   (top-centre    ↑)
+     Social  col  8–23 / row 30–46   (bottom-left  ↙)
+     Fin     col 39–54 / row 30–46   (bottom-right ↘)
+   Triangle rotated 30° right: apex up, two corners down.
 
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+   Mobile grid : 20 × 30
+     BH      col  8–13 / row 13–18
+     Tech    col  4–17 / row  1–12
+     Social  col  1–10 / row 19–31
+     Fin     col 11–20 / row 19–31
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ───────────────────────────────────────────────────────────────
+   1. RESET & ROOT TOKENS
+─────────────────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
 :root {
-  --bg:          #020108;
-  --purple:      #7c3aed;
-  --purple-glow: rgba(124,58,237,0.55);
+  /* palette */
+  --bg:          #010109;
+  --v:           #7c3aed;          /* violet — black hole */
+  --v-dim:       rgba(124,58,237,.22);
+  --v-glow:      rgba(124,58,237,.55);
   --blue:        #38bdf8;
   --cyan:        #22d3ee;
   --gold:        #fbbf24;
+  --rose:        #fb7185;
   --green:       #34d399;
-  --white-dim:   rgba(226,217,243,0.75);
-  --orbit-line:  rgba(255,255,255,0.07);
-  --glass:       rgba(10,4,22,0.72);
-  --glass-border:rgba(124,58,237,0.22);
+  --orange:      #fb923c;
+  --purple:      #c084fc;
+  --white-p:     #cbd5e1;
+  --text:        #e2d9f3;
+  --text-dim:    rgba(226,217,243,.55);
+
+  /* surfaces */
+  --glass:       rgba(5,2,16,.90);
+  --glass-brd:   rgba(124,58,237,.20);
+  --orb-line:    rgba(255,255,255,.065);
+
+  /* timing */
+  --ease-spring: cubic-bezier(.34,1.18,.64,1);
+  --ease-out:    cubic-bezier(.22,1,.36,1);
 }
 
+/* ───────────────────────────────────────────────────────────────
+   2. DOCUMENT
+─────────────────────────────────────────────────────────────── */
 html, body {
   width: 100%; height: 100%;
   overflow: hidden;
   background: var(--bg);
   font-family: 'DM Sans', sans-serif;
-  color: #e2d9f3;
+  color: var(--text);
   -webkit-tap-highlight-color: transparent;
   user-select: none;
 }
 
-/* ── Starfield ─────────────────────────────────────── */
+/* ───────────────────────────────────────────────────────────────
+   3. STARFIELD CANVAS  (z 0)
+─────────────────────────────────────────────────────────────── */
 #starfield {
-  position: fixed; inset: 0;
-  z-index: 0; pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  display: block;
 }
+
+/* ───────────────────────────────────────────────────────────────
+   4. NEBULA ATMOSPHERE  (z 1)
+   Four subtle radial blobs that slowly pulse and drift.
+   Each blob occupies a different screen quadrant so the
+   whole background feels alive without overpowering stars.
+─────────────────────────────────────────────────────────────── */
+.nebula {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 55% 45% at 15% 85%,
+      rgba(124,58,237,.10) 0%, transparent 62%),
+    radial-gradient(ellipse 44% 38% at 84% 16%,
+      rgba(56,189,248,.07)  0%, transparent 58%),
+    radial-gradient(ellipse 58% 40% at 50% 50%,
+      rgba(124,58,237,.04) 0%, transparent 68%),
+    radial-gradient(ellipse 36% 32% at 78% 78%,
+      rgba(251,113,133,.05) 0%, transparent 54%);
+  animation: nebDrift 40s ease-in-out infinite alternate;
+  will-change: transform, opacity;
+}
+
+@keyframes nebDrift {
+  from { opacity: .72; transform: scale(1); }
+  to   { opacity: 1;   transform: scale(1.07); }
+}
+
+/* ───────────────────────────────────────────────────────────────
+   5. OBSERVATORY GRID  (z 2)
+   Two breakpoints — desktop 60×45, mobile 20×30.
+   overflow:hidden ensures no orbit ring can escape the viewport.
+─────────────────────────────────────────────────────────────── */
+.obs {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: repeat(60, 1fr);
+  grid-template-rows:    repeat(45, 1fr);
+  overflow: hidden;
+  pointer-events: none;     /* re-enabled per child that needs it */
+}
+
+/* ───────────────────────────────────────────────────────────────
+   6. BLACK HOLE
+─────────────────────────────────────────────────────────────── */
+.black-hole {
+  grid-column: 27 / 34;
+  grid-row:    19 / 27;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: all;
+  z-index: 3;
+}
+
+/* Accretion disc — slow conic-gradient spin */
+.bh-accretion {
+  position: absolute;
+  width: 210px;
+  height: 210px;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    transparent           0%,
+    rgba(124,58,237,.15)  25%,
+    rgba(192,132,252,.22) 45%,
+    rgba(124,58,237,.10)  65%,
+    transparent           80%
+  );
+  animation: accSpin 22s linear infinite;
+  pointer-events: none;
+  will-change: transform;
+}
+
+@keyframes accSpin {
+  to { transform: rotate(360deg); }
+}
+
+/* Atmosphere rings — CSS var-driven size, opacity, delay */
+.bh-ring {
+  position: absolute;
+  width:  var(--rs);
+  height: var(--rs);
+  border-radius: 50%;
+  border: 1px solid rgba(124,58,237,var(--ro));
+  animation: bhRingBreathe 8s ease-in-out infinite var(--rd);
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+@keyframes bhRingBreathe {
+  0%,100% { transform: scale(1);    opacity: .55; }
+  50%      { transform: scale(1.07); opacity: 1;  }
+}
+
+/* Core singularity */
+.bh-core {
+  position: absolute;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 37% 35%,
+    #1e0640 0%,
+    #0b021f 45%,
+    var(--bg) 100%
+  );
+  box-shadow:
+    0 0 0 2px   rgba(124,58,237,.40),
+    0 0 24px 9px  rgba(124,58,237,.34),
+    0 0 75px 28px rgba(124,58,237,.16);
+  z-index: 5;
+  animation: coreBreath 7s ease-in-out infinite;
+  will-change: box-shadow;
+}
+
+@keyframes coreBreath {
+  0%,100% {
+    box-shadow:
+      0 0 0 2px   rgba(124,58,237,.40),
+      0 0 24px 9px  rgba(124,58,237,.34),
+      0 0 75px 28px rgba(124,58,237,.16);
+  }
+  50% {
+    box-shadow:
+      0 0 0 3px   rgba(124,58,237,.60),
+      0 0 40px 16px rgba(124,58,237,.50),
+      0 0 115px 44px rgba(124,58,237,.26);
+  }
+}
+
+/* SPARK label under core */
+.bh-label {
+  position: absolute;
+  top: calc(100% + 12px);
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  white-space: nowrap;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  z-index: 6;
+}
+
+.bh-spark {
+  display: block;
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 10px;
+  letter-spacing: .28em;
+  text-transform: uppercase;
+  color: rgba(196,168,255,.72);
+}
+
+.bh-obs {
+  display: block;
+  font-size: 8px;
+  letter-spacing: .18em;
+  color: rgba(196,168,255,.34);
+}
+
+/* ───────────────────────────────────────────────────────────────
+   7. STAR SYSTEMS — shared styles
+─────────────────────────────────────────────────────────────── */
+.sys {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: all;
+  cursor: pointer;
+  z-index: 3;
+  /* Clip so orbits never overflow the grid cell */
+  overflow: hidden;
+  /* Transitions: position snap + opacity */
+  transition:
+    transform .65s var(--ease-spring),
+    opacity   .45s ease;
+  will-change: transform, opacity;
+}
+
+/* ── Desktop grid placement ── */
+#sys-tech   { grid-column: 24 / 38; grid-row:  2 / 17; }
+#sys-social { grid-column:  8 / 23; grid-row: 30 / 46; }
+#sys-fin    { grid-column: 39 / 54; grid-row: 30 / 46; }
+
+/* ── Focused state: fly to centre, rise above dimmer (z 50) ── */
+.sys.focused {
+  z-index: 50 !important;
+  overflow: visible;            /* bubbles visible beyond cell edge */
+  transform:
+    translate(var(--ftx,0px), var(--fty,0px))
+    scale(var(--fsc,1.35))
+    !important;
+}
+
+/* ── Dimmed siblings ── */
+.sys.dimmed {
+  opacity: .08;
+  pointer-events: none;
+}
+
+/* ── Hover ring ── */
+.sys::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.09);
+  opacity: 0;
+  transition: opacity .3s ease;
+  pointer-events: none;
+}
+.sys:hover::after { opacity: 1; }
+
+/* ── Focus ring for keyboard navigation ── */
+.sys:focus-visible {
+  outline: none;
+}
+.sys:focus-visible::after { opacity: 1; }
+
+/* ───────────────────────────────────────────────────────────────
+   8. SYS-INNER — sized by JS via --wrap-size
+─────────────────────────────────────────────────────────────── */
+.sys-inner {
+  position: relative;
+  width:  var(--wrap-size, 240px);
+  height: var(--wrap-size, 240px);
+  flex-shrink: 0;
+}
+
+/* ───────────────────────────────────────────────────────────────
+   9. ORBIT RINGS
+   Size driven by CSS custom property --or (radius px).
+   diameter = --or * 2 + 12px planet bleed.
+─────────────────────────────────────────────────────────────── */
+.orb {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width:  calc(var(--or) * 2 + 12px);
+  height: calc(var(--or) * 2 + 12px);
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 1px solid var(--orb-line);
+  /* Spin: duration --od, delay --dl */
+  animation: orbSpin var(--od) linear infinite var(--dl);
+  will-change: transform;
+  pointer-events: none;
+}
+
+@keyframes orbSpin {
+  from { transform: translate(-50%,-50%) rotate(0deg); }
+  to   { transform: translate(-50%,-50%) rotate(360deg); }
+}
+
+/* ───────────────────────────────────────────────────────────────
+   10. PLANETS
+   Sit at top-centre of orbit ring (top:-5px).
+   Counter-spin so they appear stationary in space as ring rotates.
+─────────────────────────────────────────────────────────────── */
+.planet {
+  position: absolute;
+  top: -5px;
+  left: 50%;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  z-index: 4;
+  pointer-events: all;
+  cursor: pointer;
+  transform: translateX(-50%);
+  animation: pCtr var(--od) linear infinite var(--dl);
+  will-change: transform;
+  transition: filter .2s ease;
+}
+
+@keyframes pCtr {
+  from { transform: translateX(-50%) rotate(0deg); }
+  to   { transform: translateX(-50%) rotate(-360deg); }
+}
+
+.planet:hover { filter: brightness(1.6) saturate(1.4); }
+
+/* Planet colours + glow */
+.p-cyan   { background: #22d3ee; box-shadow: 0 0 6px 3px rgba(34,211,238,.72); }
+.p-blue   { background: #38bdf8; box-shadow: 0 0 6px 3px rgba(56,189,248,.72); }
+.p-purple { background: #c084fc; box-shadow: 0 0 6px 3px rgba(192,132,252,.72); }
+.p-white  { background: #cbd5e1; box-shadow: 0 0 4px 2px rgba(203,213,225,.50); }
+.p-green  { background: #34d399; box-shadow: 0 0 6px 3px rgba(52,211,153,.72); }
+.p-gold   { background: #fbbf24; box-shadow: 0 0 6px 3px rgba(251,191,36,.72); }
+.p-orange { background: #fb923c; box-shadow: 0 0 6px 3px rgba(251,146,60,.72); }
+.p-rose   { background: #fb7185; box-shadow: 0 0 6px 3px rgba(251,113,133,.72); }
+
+/* ───────────────────────────────────────────────────────────────
+   11. PLANET LABEL BUBBLES
+   Injected by JS inside each .orb (sibling to .planet).
+   Positioned above the planet dot (top: -30px from orbit top).
+   Counter-rotates via same animation timing as planet/orbit.
+
+   Visibility rules:
+   — Desktop (@media hover): show ALL bubbles when .sys.focused
+   — Mobile: show only .planet.tapped bubble (JS class toggle)
+─────────────────────────────────────────────────────────────── */
+.pbub {
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  white-space: nowrap;
+
+  /* glass pill */
+  background: rgba(4,1,14,.86);
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: 6px;
+  padding: 3px 8px;
+
+  font-family: 'Syne', sans-serif;
+  font-size: 8.5px;
+  font-weight: 600;
+  letter-spacing: .08em;
+  color: rgba(226,217,243,.92);
+
+  pointer-events: none;
+  backdrop-filter: blur(8px);
+
+  /* hidden until conditions met */
+  opacity: 0;
+  transition: opacity .22s ease;
+
+  /* counter-rotate to keep text level */
+  animation: bubCtr var(--od) linear infinite var(--dl);
+  will-change: transform;
+}
+
+@keyframes bubCtr {
+  from { transform: translateX(-50%) rotate(0deg); }
+  to   { transform: translateX(-50%) rotate(-360deg); }
+}
+
+/* Desktop: reveal all bubbles when parent system is focused */
+@media (hover: hover) {
+  .sys.focused .pbub { opacity: 1; }
+}
+
+/* Mobile (and any device): reveal on tapped planet */
+.planet.tapped ~ .pbub,
+.planet.tapped + .pbub { opacity: 1 !important; }
+
+/* ───────────────────────────────────────────────────────────────
+   12. STAR CENTRES
+─────────────────────────────────────────────────────────────── */
+.sys-star {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  z-index: 5;
+  animation: starBreathe 5s ease-in-out infinite;
+  will-change: transform, filter;
+}
+
+@keyframes starBreathe {
+  0%,100% { transform: translate(-50%,-50%) scale(1);   filter: brightness(1);    }
+  50%      { transform: translate(-50%,-50%) scale(1.22); filter: brightness(1.45); }
+}
+
+.s-blue {
+  background: radial-gradient(circle at 35% 35%, #bae6fd, #38bdf8);
+  box-shadow: 0 0 12px 5px rgba(56,189,248,.58), 0 0 36px 14px rgba(56,189,248,.22);
+}
+.s-gold {
+  background: radial-gradient(circle at 35% 35%, #fde68a, #fbbf24);
+  box-shadow: 0 0 12px 5px rgba(251,191,36,.58), 0 0 36px 14px rgba(251,191,36,.22);
+  animation-delay: -2.5s;
+}
+.s-rose {
+  background: radial-gradient(circle at 35% 35%, #fecdd3, #fb7185);
+  box-shadow: 0 0 12px 5px rgba(251,113,133,.58), 0 0 36px 14px rgba(251,113,133,.22);
+  animation-delay: -4s;
+}
+
+/* ───────────────────────────────────────────────────────────────
+   13. STAR GLOW HALOS
+─────────────────────────────────────────────────────────────── */
+.sys-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: glowBreathe 9s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+@keyframes glowBreathe {
+  0%,100% { transform: translate(-50%,-50%) scale(1);    opacity: .50; }
+  50%      { transform: translate(-50%,-50%) scale(1.55); opacity: 1;  }
+}
+
+.g-blue  {
+  background: radial-gradient(circle, rgba(56,189,248,.08) 0%, transparent 70%);
+}
+.g-gold  {
+  background: radial-gradient(circle, rgba(251,191,36,.08) 0%, transparent 70%);
+  animation-delay: -3s;
+}
+.g-rose  {
+  background: radial-gradient(circle, rgba(251,113,133,.08) 0%, transparent 70%);
+  animation-delay: -6s;
+}
+
+/* ───────────────────────────────────────────────────────────────
+   14. NAMEPLATES
+   Vertical offset set by JS via --plate-top after sys-inner sizing.
+─────────────────────────────────────────────────────────────── */
+.sys-plate {
+  position: absolute;
+  top: var(--plate-top, calc(50% + 128px));
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  white-space: nowrap;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  pointer-events: none;
+}
+
+.sys-name {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+  color: rgba(226,217,243,.65);
+  transition: color .25s ease;
+}
+
+.sys-pct {
+  font-family: 'Syne', sans-serif;
+  font-weight: 600;
+  font-size: 9.5px;
+  letter-spacing: .08em;
+  color: #86efac;
+  opacity: 0;
+  transition: opacity .3s ease;
+}
+
+.sys:hover  .sys-name,
+.sys.focused .sys-name { color: #fff; }
+
+.sys:hover  .sys-pct,
+.sys.focused .sys-pct  { opacity: 1; }
+
+/* ───────────────────────────────────────────────────────────────
+   15. DIMMER  (z 10)
+   Covers layers 0–3. Focused system is z 50 → always above.
+─────────────────────────────────────────────────────────────── */
+.dimmer {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  background: rgba(1,1,9,.88);
+  backdrop-filter: blur(3px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .5s ease;
+}
+
+.dimmer.on {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* ───────────────────────────────────────────────────────────────
+   16. DETAIL PANEL  (z 60)
+   Desktop: right-side drawer 290px wide.
+   Mobile:  bottom sheet 56vh.
+─────────────────────────────────────────────────────────────── */
+.dpanel {
+  position: fixed;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 290px;
+  z-index: 60;
+  background: var(--glass);
+  backdrop-filter: blur(26px);
+  -webkit-backdrop-filter: blur(26px);
+  border-left: 1px solid var(--glass-brd);
+  padding: 48px 22px 28px;
+  transform: translateX(106%);
+  transition: transform .55s var(--ease-out);
+  pointer-events: none;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+.dpanel::-webkit-scrollbar { display: none; }
+
+.dpanel.open {
+  transform: translateX(0);
+  pointer-events: all;
+}
+
+/* Close button */
+.dpanel-close {
+  position: absolute;
+  top: 13px;
+  right: 13px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgba(124,58,237,.14);
+  border: 1px solid rgba(124,58,237,.28);
+  color: rgba(196,168,255,.75);
+  font-size: 11px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .2s, color .2s;
+  line-height: 1;
+}
+.dpanel-close:hover  { background: rgba(124,58,237,.34); color: #fff; }
+.dpanel-close:focus-visible {
+  outline: 2px solid rgba(124,58,237,.6);
+  outline-offset: 2px;
+}
+
+/* Detail content injected by JS */
+#dpanel-body h2 {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 20px;
+  line-height: 1.15;
+  background: linear-gradient(135deg, #fff 40%, rgba(196,168,255,.62));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 5px;
+}
+
+.dp-trend {
+  display: block;
+  font-family: 'Syne', sans-serif;
+  font-weight: 600;
+  font-size: 10px;
+  letter-spacing: .10em;
+  color: #86efac;
+  margin-bottom: 16px;
+}
+
+.dp-desc {
+  font-size: 12px;
+  line-height: 1.78;
+  color: var(--text-dim);
+  margin-bottom: 20px;
+}
+
+.dp-divider {
+  width: 100%;
+  height: 1px;
+  background: rgba(255,255,255,.06);
+  margin-bottom: 16px;
+}
+
+.dp-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255,255,255,.05);
+  font-size: 11px;
+  color: rgba(226,217,243,.42);
+}
+
+.dp-row span:last-child {
+  font-family: 'Syne', sans-serif;
+  font-weight: 600;
+  font-size: 12px;
+  color: rgba(226,217,243,.90);
+}
+
+/* ───────────────────────────────────────────────────────────────
+   17. PLANET TOOLTIP  (z 100)
+   Floating element repositioned by JS on mousemove / touchstart.
+─────────────────────────────────────────────────────────────── */
+.ptip {
+  position: fixed;
+  z-index: 100;
+  pointer-events: none;
+  background: rgba(4,1,14,.90);
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-family: 'Syne', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .08em;
+  color: rgba(226,217,243,.95);
+  backdrop-filter: blur(10px);
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateY(5px);
+  transition: opacity .16s ease, transform .16s ease;
+}
+
+.ptip.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ───────────────────────────────────────────────────────────────
+   18. UI HINT
+─────────────────────────────────────────────────────────────── */
+.hint {
+  position: fixed;
+  bottom: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  font-size: 9.5px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: rgba(196,168,255,.28);
+  pointer-events: none;
+  white-space: nowrap;
+  transition: opacity .7s ease;
+}
+
+.hint.gone { opacity: 0; }
+
+/* ═══════════════════════════════════════════════════════════════
+   19. MOBILE  ≤ 600px
+   Grid 20 × 30
+   Systems scaled to fit — JS also applies radius scaling.
+═══════════════════════════════════════════════════════════════ */
+@media (max-width: 600px) {
+
+  /* Grid */
+  .obs {
+    grid-template-columns: repeat(20, 1fr);
+    grid-template-rows:    repeat(30, 1fr);
+  }
+
+  /* Grid placement */
+  .black-hole { grid-column:  8 / 14; grid-row: 13 / 18; }
+  #sys-tech   { grid-column:  4 / 18; grid-row:  1 / 13; }
+  #sys-social { grid-column:  1 / 10; grid-row: 19 / 31; }
+  #sys-fin    { grid-column: 11 / 21; grid-row: 19 / 31; }
+
+  /* BH scales down */
+  .bh-core      { width: 38px; height: 38px; }
+  .bh-accretion { width: 140px; height: 140px; }
+  .bh-ring:nth-child(2) { --rs: 128px; }
+  .bh-ring:nth-child(3) { --rs:  98px; }
+  .bh-ring:nth-child(4) { --rs:  70px; }
+
+  /* Detail panel → bottom sheet */
+  .dpanel {
+    right: 0;
+    left: 0;
+    top: auto;
+    bottom: 0;
+    width: 100%;
+    height: 56vh;
+    border-left: none;
+    border-top: 1px solid var(--glass-brd);
+    border-radius: 18px 18px 0 0;
+    transform: translateY(106%);
+    padding: 28px 18px 20px;
+  }
+
+  .dpanel.open { transform: translateY(0); }
+
+  /* Mobile bubble rule:
+     focused alone is NOT enough — only .planet.tapped shows bubble */
+  .sys.focused .pbub { opacity: 0 !important; }
+  .planet.tapped + .pbub { opacity: 1 !important; }
+
+  /* Softer focus scale on small screens */
+  .sys.focused { --fsc: 1.15 !important; }
+
+  /* Planet slightly larger for tap accuracy */
+  .planet { width: 11px; height: 11px; }
+
+  /* Nameplate font smaller */
+  .sys-name { font-size: 10px; }
+  .sys-pct  { font-size: 8.5px; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   20. REDUCED MOTION
+═══════════════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  .orb,
+  .planet,
+  .pbub,
+  .bh-core,
+  .bh-ring,
+  .bh-accretion,
+  .sys-star,
+  .sys-glow,
+  .nebula {
+    animation: none !important;
+    transition: none !important;
+  }
+}}
 
 /* ── Nebula ────────────────────────────────────────── */
 .nebula {
