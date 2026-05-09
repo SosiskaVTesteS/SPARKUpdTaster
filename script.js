@@ -1,40 +1,498 @@
-/* ═══════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════════════
    SPARK Observatory — script.js
-   ═══════════════════════════════════════════════════════ */
+   ───────────────────────────────────────────────────────────────
+   Sections:
+   1. Starfield canvas  — twinkling state-machine
+   2. Orbit sizing      — runtime radius scaling to fit grid cells
+   3. Bubble injection  — planet label bubbles into each .orb
+   4. Focus mechanics   — open / close system, fly-to-centre
+   5. Detail panel      — render system data
+   6. Planet tooltips   — desktop hover + mobile tap
+   7. Keyboard nav      — ESC, Enter, Space
+   8. Resize handler    — debounced, re-runs sizing
+═══════════════════════════════════════════════════════════════ */
 
 'use strict';
 
-/* ── 1. STARFIELD ─────────────────────────────────── */
-(function () {
-  const canvas = document.getElementById('starfield');
-  const ctx = canvas.getContext('2d');
-  let stars = [], W = 0, H = 0;
+/* ───────────────────────────────────────────────────────────────
+   SYSTEM DATA
+   Single source of truth for all three star systems.
+─────────────────────────────────────────────────────────────── */
+const SYSTEMS = {
+  tech: {
+    name:  'Технологии',
+    trend: '↑ 42% за последний месяц',
+    desc:  'Самая динамичная зона SPARK. ИИ-инструменты нового поколения, DeFi-протоколы и Web3-инфраструктура формируют ядро. Высокий риск — высокая доходность.',
+    metrics: [
+      ['Активных идей',    '1 247'],
+      ['Объём SPK / 24ч',  '84 320'],
+      ['Средний ROI',      '+61%'],
+      ['Новых сегодня',    '38'],
+      ['Топ-тег',          'AI Tools'],
+    ],
+  },
+  social: {
+    name:  'Социум',
+    trend: '↑ 31% за последний месяц',
+    desc:  'Социальные платформы, B2B SaaS и экономика доверия. Предсказуемые метрики роста, умеренный риск. Идеальная точка входа для консервативных инвесторов.',
+    metrics: [
+      ['Активных идей',    '742'],
+      ['Объём SPK / 24ч',  '52 180'],
+      ['Средний ROI',      '+44%'],
+      ['Новых сегодня',    '24'],
+      ['Топ-тег',          'B2B SaaS'],
+    ],
+  },
+  fin: {
+    name:  'Финансы',
+    trend: '↑ 55% за последний месяц',
+    desc:  'Венчурные инструменты, криптовалютные стратегии и токеномика следующего поколения. Самая быстрорастущая зона — волатильность высокая, потенциал огромный.',
+    metrics: [
+      ['Активных идей',    '934'],
+      ['Объём SPK / 24ч',  '118 540'],
+      ['Средний ROI',      '+88%'],
+      ['Новых сегодня',    '51'],
+      ['Топ-тег',          'Venture'],
+    ],
+  },
+};
 
-  function resize() {
-    W = canvas.width  = window.innerWidth;
-    H = canvas.height = window.innerHeight;
-    buildStars();
-  }
+/* ───────────────────────────────────────────────────────────────
+   1. STARFIELD CANVAS
+   State machine per star: idle → brightening → fading → idle
+   Only ~16% of idle stars trigger a twinkle per cycle to keep
+   the effect rare and organic.
+─────────────────────────────────────────────────────────────── */
+(function initStarfield() {
+  const cvs = /** @type {HTMLCanvasElement} */ (document.getElementById('starfield'));
+  const ctx = cvs.getContext('2d');
+  let stars = [];
+  let W = 0, H = 0;
 
+  /* Build star pool sized to viewport area */
   function buildStars() {
     stars = [];
-    const n = Math.floor(W * H / 2600);
-    for (let i = 0; i < n; i++) {
-      const alpha = Math.random() * 0.45 + 0.08;
+    const count = Math.floor(W * H / 2400);
+    for (let i = 0; i < count; i++) {
+      const alpha = Math.random() * 0.44 + 0.07;
       stars.push({
-        x: Math.random() * W,
-        y: Math.random() * H,
-        r: Math.random() * 1.1 + 0.15,
-        alpha, cur: alpha,
+        x:     Math.random() * W,
+        y:     Math.random() * H,
+        r:     Math.random() * 1.05 + 0.15,
+        alpha,               // resting opacity
+        cur:   alpha,        // current rendered opacity
         state: 'idle',
-        idle: Math.floor(Math.random() * 900 + 250),
-        spd:  Math.random() * 0.013 + 0.004,
-        peak: 0,
+        idle:  Math.floor(Math.random() * 1100 + 200),
+        spd:   Math.random() * 0.012 + 0.004,
+        peak:  0,
       });
     }
   }
 
-  function tick() {
+  function resize() {
+    W = cvs.width  = window.innerWidth;
+    H = cvs.height = window.innerHeight;
+    buildStars();
+  }
+
+  function frame() {
+    ctx.clearRect(0, 0, W, H);
+
+    for (const s of stars) {
+      /* ── state transitions ── */
+      if (s.state === 'idle') {
+        if (--s.idle <= 0) {
+          if (Math.random() < 0.16) {
+            s.state = 'up';
+            s.peak  = Math.min(1, s.alpha + Math.random() * 0.50 + 0.14);
+          } else {
+            s.idle = Math.floor(Math.random() * 900 + 250);
+          }
+        }
+      } else if (s.state === 'up') {
+        s.cur += s.spd;
+        if (s.cur >= s.peak) { s.cur = s.peak; s.state = 'down'; }
+      } else {
+        /* fading back — slightly slower than brightening */
+        s.cur -= s.spd * 0.62;
+        if (s.cur <= s.alpha) {
+          s.cur  = s.alpha;
+          s.state = 'idle';
+          s.idle  = Math.floor(Math.random() * 950 + 300);
+        }
+      }
+
+      /* ── draw ── */
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(212,202,255,${s.cur.toFixed(3)})`;
+      ctx.fill();
+    }
+
+    requestAnimationFrame(frame);
+  }
+
+  window.addEventListener('resize', resize, { passive: true });
+  resize();
+  frame();
+})();
+
+/* ───────────────────────────────────────────────────────────────
+   2. ORBIT RADIUS SCALING
+   Reads each .sys cell's pixel dimensions at runtime.
+   Computes the maximum allowed radius so no orbit ring
+   overflows the grid cell (+ 16px safety margin).
+   Writes scaled --or back to each .orb and sets --wrap-size
+   on .sys-inner so the container matches the largest orbit.
+   Also updates .sys-plate --plate-top for correct nameplate offset.
+─────────────────────────────────────────────────────────────── */
+function sizeOrbits() {
+  document.querySelectorAll('.sys').forEach(sys => {
+    const inner = sys.querySelector('.sys-inner');
+    const plate = sys.querySelector('.sys-plate');
+    if (!inner) return;
+
+    /* Available radius = min(cellW, cellH) / 2 − margin */
+    const cellW  = sys.offsetWidth;
+    const cellH  = sys.offsetHeight;
+    const avail  = Math.min(cellW, cellH) / 2 - 16;
+
+    /* Find the largest base radius declared in HTML */
+    const maxBaseR = parseFloat(inner.dataset.maxR || '110');
+
+    /* Scale factor — never upscale beyond 1 */
+    const scale = avail < maxBaseR ? avail / maxBaseR : 1;
+
+    /* Apply scaled radius to every orbit */
+    inner.querySelectorAll('.orb').forEach(orb => {
+      const baseR = parseFloat(orb.dataset.baseR || '50');
+      const r     = Math.round(baseR * scale);
+      orb.style.setProperty('--or', `${r}px`);
+    });
+
+    /* Resize the inner container to fit the largest orbit */
+    const wrapPx = Math.round(maxBaseR * scale * 2 + 12);
+    inner.style.width  = `${wrapPx}px`;
+    inner.style.height = `${wrapPx}px`;
+    inner.style.setProperty('--wrap-size', `${wrapPx}px`);
+
+    /* Nameplate: centre + half-wrap + 12px gap */
+    if (plate) {
+      plate.style.top = `calc(50% + ${Math.round(wrapPx / 2) + 12}px)`;
+    }
+  });
+}
+
+/* ───────────────────────────────────────────────────────────────
+   3. PLANET LABEL BUBBLE INJECTION
+   For every .orb that has a data-label, we inject a .pbub span
+   as a sibling to .planet inside the orbit ring.
+   The bubble inherits --od / --dl from its parent .orb so its
+   counter-rotation animation stays perfectly in sync.
+─────────────────────────────────────────────────────────────── */
+function injectBubbles() {
+  document.querySelectorAll('.orb[data-label]').forEach(orb => {
+    /* Skip if already injected (resize guard) */
+    if (orb.querySelector('.pbub')) return;
+
+    const label = orb.dataset.label;
+    if (!label) return;
+
+    const bub = document.createElement('span');
+    bub.className   = 'pbub';
+    bub.textContent = label;
+
+    /* Pass animation timing down via CSS vars on the bubble itself */
+    const od    = orb.style.getPropertyValue('--od')    || '30s';
+    const dl    = orb.style.getPropertyValue('--dl')    || '0s';
+    bub.style.setProperty('--od', od);
+    bub.style.setProperty('--dl', dl);
+
+    /* Insert after .planet so CSS sibling selector .planet.tapped + .pbub works */
+    const planet = orb.querySelector('.planet');
+    if (planet) {
+      planet.after(bub);
+    } else {
+      orb.appendChild(bub);
+    }
+  });
+}
+
+/* ───────────────────────────────────────────────────────────────
+   4. FOCUS MECHANICS
+   openSystem(el)  — fly system to viewport centre, dim siblings
+   closeSystem()   — reverse everything
+─────────────────────────────────────────────────────────────── */
+const obs     = document.getElementById('obs');
+const dimmer  = document.getElementById('dimmer');
+const hint    = document.getElementById('hint');
+const systems = document.querySelectorAll('.sys');
+
+let focusedSys  = null;
+let hintTimer   = null;
+
+/**
+ * Opens (focuses) a star system.
+ * Computes the CSS translate needed to visually centre the system
+ * in the viewport, compensating for the scale factor.
+ * @param {HTMLElement} el — the .sys element to focus
+ */
+function openSystem(el) {
+  /* Clicking the already-focused system closes it */
+  if (focusedSys === el) { closeSystem(); return; }
+
+  focusedSys = el;
+
+  /* Viewport centre */
+  const vx = window.innerWidth  / 2;
+  const vy = window.innerHeight / 2;
+
+  /* System's current centre */
+  const rect = el.getBoundingClientRect();
+  const ex   = rect.left + rect.width  / 2;
+  const ey   = rect.top  + rect.height / 2;
+
+  /* Scale factor differs by breakpoint */
+  const sc = window.innerWidth <= 600 ? 1.15 : 1.35;
+
+  /* Translate required BEFORE scale is applied
+     (divide by scale because CSS applies scale after translate) */
+  const tx = (vx - ex) / sc;
+  const ty = (vy - ey) / sc;
+
+  el.style.setProperty('--ftx', `${tx.toFixed(2)}px`);
+  el.style.setProperty('--fty', `${ty.toFixed(2)}px`);
+  el.style.setProperty('--fsc', String(sc));
+
+  /* Apply state classes */
+  systems.forEach(s => {
+    if (s === el) {
+      s.classList.add('focused');
+      s.classList.remove('dimmed');
+    } else {
+      s.classList.add('dimmed');
+      s.classList.remove('focused');
+    }
+  });
+
+  dimmer.classList.add('on');
+  hint.classList.add('gone');
+
+  /* Render detail panel */
+  renderDetail(el.dataset.key);
+  openPanel();
+}
+
+/** Closes the currently focused system and resets all state. */
+function closeSystem() {
+  if (!focusedSys) return;
+
+  /* Clear tapped planets */
+  document.querySelectorAll('.planet.tapped').forEach(p => p.classList.remove('tapped'));
+
+  focusedSys.classList.remove('focused');
+  focusedSys.style.removeProperty('--ftx');
+  focusedSys.style.removeProperty('--fty');
+  focusedSys.style.removeProperty('--fsc');
+  focusedSys = null;
+
+  systems.forEach(s => s.classList.remove('dimmed', 'focused'));
+
+  dimmer.classList.remove('on');
+  closePanel();
+
+  /* Re-show hint after a delay */
+  clearTimeout(hintTimer);
+  hintTimer = setTimeout(() => hint.classList.remove('gone'), 3500);
+}
+
+/* System click */
+systems.forEach(sys => {
+  sys.addEventListener('click', e => {
+    e.stopPropagation();
+    openSystem(sys);
+  });
+});
+
+/* Clicking the dimmer closes */
+dimmer.addEventListener('click', closeSystem);
+
+/* ───────────────────────────────────────────────────────────────
+   5. DETAIL PANEL
+─────────────────────────────────────────────────────────────── */
+const dpanel      = document.getElementById('dpanel');
+const dpanelClose = document.getElementById('dpanel-close');
+const dpanelBody  = document.getElementById('dpanel-body');
+
+function openPanel() {
+  dpanel.classList.add('open');
+  dpanel.setAttribute('aria-hidden', 'false');
+}
+
+function closePanel() {
+  dpanel.classList.remove('open');
+  dpanel.setAttribute('aria-hidden', 'true');
+}
+
+/**
+ * Renders system details into #dpanel-body.
+ * @param {string} key — key in SYSTEMS object
+ */
+function renderDetail(key) {
+  const d = SYSTEMS[key];
+  if (!d) return;
+
+  const metricsHTML = d.metrics
+    .map(([label, value]) => `
+      <div class="dp-row">
+        <span>${label}</span>
+        <span>${value}</span>
+      </div>`)
+    .join('');
+
+  dpanelBody.innerHTML = `
+    <h2>${d.name}</h2>
+    <span class="dp-trend">${d.trend}</span>
+    <p class="dp-desc">${d.desc}</p>
+    <div class="dp-divider"></div>
+    ${metricsHTML}
+  `;
+}
+
+dpanelClose.addEventListener('click', e => {
+  e.stopPropagation();
+  closeSystem();
+});
+
+/* ───────────────────────────────────────────────────────────────
+   6. PLANET TOOLTIPS
+   Desktop: floating tooltip follows cursor while hovering a planet
+            — only shows when the parent system is focused.
+   Mobile:  tooltip content shown via .pbub bubble on tap.
+            .planet.tapped class toggled; tap elsewhere clears it.
+─────────────────────────────────────────────────────────────── */
+const ptip = document.getElementById('ptip');
+
+/** Move floating tooltip to cursor position */
+function moveTip(x, y) {
+  ptip.style.left = `${x + 16}px`;
+  ptip.style.top  = `${y - 28}px`;
+}
+
+/* Attach events to all planets (works after bubbles are injected) */
+function bindPlanetEvents() {
+  document.querySelectorAll('.planet').forEach(planet => {
+    const label = planet.closest('.orb')?.dataset.label || '';
+
+    /* ── Desktop hover ── */
+    planet.addEventListener('mouseenter', e => {
+      const sys = planet.closest('.sys');
+      if (!sys?.classList.contains('focused')) return;
+      ptip.textContent = label;
+      ptip.setAttribute('aria-label', label);
+      ptip.classList.add('show');
+      moveTip(e.clientX, e.clientY);
+    });
+
+    planet.addEventListener('mousemove', e => {
+      if (ptip.classList.contains('show')) moveTip(e.clientX, e.clientY);
+    });
+
+    planet.addEventListener('mouseleave', () => {
+      ptip.classList.remove('show');
+    });
+
+    /* ── Mobile tap ── */
+    planet.addEventListener('touchstart', e => {
+      e.stopPropagation();
+      const sys = planet.closest('.sys');
+      if (!sys?.classList.contains('focused')) return;
+
+      const wasTapped = planet.classList.contains('tapped');
+
+      /* Clear all tapped states first */
+      document.querySelectorAll('.planet.tapped').forEach(p => p.classList.remove('tapped'));
+
+      if (!wasTapped) planet.classList.add('tapped');
+    }, { passive: true });
+  });
+}
+
+/* Tap anywhere outside a planet clears tapped state */
+document.addEventListener('touchstart', e => {
+  if (!e.target.closest('.planet')) {
+    document.querySelectorAll('.planet.tapped').forEach(p => p.classList.remove('tapped'));
+  }
+}, { passive: true });
+
+/* ───────────────────────────────────────────────────────────────
+   7. KEYBOARD NAVIGATION
+─────────────────────────────────────────────────────────────── */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    closeSystem();
+    return;
+  }
+
+  /* Enter / Space activate the focused (tab-focused) system */
+  if ((e.key === 'Enter' || e.key === ' ') && document.activeElement?.classList.contains('sys')) {
+    e.preventDefault();
+    openSystem(/** @type {HTMLElement} */ (document.activeElement));
+  }
+});
+
+/* ───────────────────────────────────────────────────────────────
+   8. RESIZE HANDLER
+   Debounced — runs sizing + recalculates focused system position.
+─────────────────────────────────────────────────────────────── */
+let resizeTimer = null;
+
+function onResize() {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => {
+    sizeOrbits();
+
+    /* If a system is focused, recompute its fly-to position */
+    if (focusedSys) {
+      const vx   = window.innerWidth  / 2;
+      const vy   = window.innerHeight / 2;
+      const rect = focusedSys.getBoundingClientRect();
+
+      /* Temporarily remove focused transform to get real position */
+      focusedSys.style.transition = 'none';
+      focusedSys.classList.remove('focused');
+
+      requestAnimationFrame(() => {
+        const r  = focusedSys.getBoundingClientRect();
+        const ex = r.left + r.width  / 2;
+        const ey = r.top  + r.height / 2;
+        const sc = window.innerWidth <= 600 ? 1.15 : 1.35;
+
+        focusedSys.style.setProperty('--ftx', `${((vx - ex) / sc).toFixed(2)}px`);
+        focusedSys.style.setProperty('--fty', `${((vy - ey) / sc).toFixed(2)}px`);
+        focusedSys.style.setProperty('--fsc', String(sc));
+
+        focusedSys.classList.add('focused');
+
+        /* Re-enable transitions after one frame */
+        requestAnimationFrame(() => {
+          focusedSys.style.removeProperty('transition');
+        });
+      });
+    }
+  }, 120);
+}
+
+window.addEventListener('resize', onResize, { passive: true });
+
+/* ───────────────────────────────────────────────────────────────
+   INIT — run after DOM is fully parsed
+─────────────────────────────────────────────────────────────── */
+(function init() {
+  sizeOrbits();      /* 1. set orbit radii based on real cell sizes */
+  injectBubbles();   /* 2. inject .pbub elements into orbit rings    */
+  bindPlanetEvents();/* 3. attach hover/tap listeners to planets     */
+})();  function tick() {
     ctx.clearRect(0, 0, W, H);
     for (const s of stars) {
       if (s.state === 'idle') {
