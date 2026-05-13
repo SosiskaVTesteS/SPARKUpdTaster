@@ -1,39 +1,115 @@
-/* ═══════════════════════════════════════════════════════════════
-   SPARK Observatory — style.css
-   ───────────────────────────────────────────────────────────────
-   Desktop grid : 60 × 45
-     BH      col 27–34 / row 19–27   (centre)
-     Tech    col 24–38 / row  2–17   (top-centre    ↑)
-     Social  col  8–23 / row 30–46   (bottom-left  ↙)
-     Fin     col 39–54 / row 30–46   (bottom-right ↘)
-   Triangle rotated 30° right: apex up, two corners down.
-
-   Mobile grid : 20 × 30
-     BH      col  8–13 / row 13–18
-     Tech    col  4–17 / row  1–12
-     Social  col  1–10 / row 19–31
-     Fin     col 11–20 / row 19–31
-   ═══════════════════════════════════════════════════════════════ */
-
-/* ───────────────────────────────────────────────────────────────
-   1. RESET & ROOT TOKENS
-─────────────────────────────────────────────────────────────── */
-*, *::before, *::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+/* Общие настройки фона и шрифтов */
+body {
+    background-color: #05070a; /* Глубокий космический черный */
+    color: #e0e0e0;
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    overflow-x: hidden;
 }
 
-:root {
-  /* palette */
-  --bg:          #010109;
-  --v:           #7c3aed;          /* violet — black hole */
-  --v-dim:       rgba(124,58,237,.22);
-  --v-glow:      rgba(124,58,237,.55);
-  --blue:        #38bdf8;
-  --cyan:        #22d3ee;
-  --gold:        #fbbf24;
-  --rose:        #fb7185;
+.journey-wrapper {
+    position: relative;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 100px 20px;
+}
+
+/* Тонкая белая соединительная линия */
+.connecting-line {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 1px;
+    height: 100%;
+    background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transform: translateX(-50%);
+    z-index: 0;
+}
+
+/* Секции (Зигзаг) */
+.step-section {
+    display: flex;
+    align-items: center;
+    margin-bottom: 200px; /* Расстояние между планетами */
+    position: relative;
+    z-index: 1;
+    transition: all 0.6s ease;
+}
+
+/* Настройка зигзага */
+.step-section.left { flex-direction: row; }
+.step-section.right { flex-direction: row-reverse; }
+
+/* Сферы (Кремовые) */
+.planet-container {
+    flex: 0 0 300px;
+    display: flex;
+    justify-content: center;
+}
+
+.planet-sphere {
+    width: 150px;
+    height: 150px;
+    background: #fdf5e6; /* Кремовый / Слоновая кость */
+    border-radius: 50%;
+    position: relative;
+    transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+}
+
+/* Нежное свечение разных цветов */
+.color-blue   { box-shadow: 0 0 40px rgba(0, 150, 255, 0.2); }
+.color-purple { box-shadow: 0 0 40px rgba(180, 0, 255, 0.2); }
+.color-gold   { box-shadow: 0 0 40px rgba(255, 215, 0, 0.2); }
+.color-green  { box-shadow: 0 0 40px rgba(0, 255, 150, 0.2); }
+.color-red    { box-shadow: 0 0 40px rgba(255, 80, 80, 0.2); }
+
+/* Эффект увеличения и вращения при фокусе (через класс, который добавит JS) */
+.step-section.active .planet-sphere {
+    transform: scale(1.4) rotate(45deg);
+    box-shadow: 0 0 60px currentColor; /* Усиливаем свечение при активации */
+}
+
+/* Контент и Текст */
+.content-box {
+    flex: 1;
+    padding: 0 40px;
+}
+
+/* Заголовок (Цвет будет наследоваться от сияния) */
+.title {
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+/* Магия обтекания по полукругу (Shape-outside) */
+.description {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: #b0b0b0;
+    max-width: 450px;
+    /* Чтобы текст шел дугой, используем float и shape */
+}
+
+/* Классы для раскраски заголовков */
+.color-blue + .content-box .title { color: #80d4ff; }
+.color-purple + .content-box .title { color: #d480ff; }
+.color-gold + .content-box .title { color: #ffe080; }
+.color-green + .content-box .title { color: #80ffca; }
+.color-red + .content-box .title { color: #ff8080; }
+
+/* Адаптив для мобилок */
+@media (max-width: 768px) {
+    .step-section, .step-section.right {
+        flex-direction: column;
+        text-align: center;
+    }
+    .connecting-line { left: 20px; }
+    .content-box { padding: 40px 0; }
+}
   --green:       #34d399;
   --orange:      #fb923c;
   --purple:      #c084fc;
