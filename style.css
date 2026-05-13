@@ -1,1 +1,247 @@
+/* 1. БАЗОВЫЕ НАСТРОЙКИ */
+:root {
+    --bg-color: #05070a;        /* Глубокий космический черный */
+    --planet-cream: #fdf5e6;    /* Цвет слоновой кости (кремовый) */
+    --line-color: rgba(255, 255, 255, 0.15);
+    --text-main: #b0b0b0;
+    --transition-speed: 0.8s;
+}
 
+body {
+    background-color: var(--bg-color);
+    color: #ffffff;
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+/* 2. КОНТЕЙНЕР И ЛИНИЯ */
+.journey-container {
+    position: relative;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 150px 20px;
+}
+
+/* Тонкая вертикальная нить между планетами */
+.line-connector {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 1px;
+    height: 100%;
+    background: linear-gradient(
+        to bottom, 
+        transparent, 
+        var(--line-color) 15%, 
+        var(--line-color) 85%, 
+        transparent
+    );
+    transform: translateX(-50%);
+    z-index: 0;
+}
+
+/* 3. СЕКЦИИ (ШАГ И ЗИГЗАГ) */
+.journey-step {
+    display: flex;
+    align-items: center;
+    margin-bottom: 250px; /* Расстояние между этапами */
+    position: relative;
+    z-index: 1;
+    width: 100%;
+}
+
+/* Направление зигзага */
+.step-left { flex-direction: row; }
+.step-right { flex-direction: row-reverse; }
+
+/* 4. ПЛАНЕТЫ (СФЕРЫ) */
+.planet-wrapper {
+    flex: 0 0 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.sphere {
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    /* Градиент для эффекта объема (3D) */
+    background: radial-gradient(circle at 35% 35%, #ffffff 0%, var(--planet-cream) 50%, #dcd0ba 100%);
+    position: relative;
+    transition: transform var(--transition-speed) cubic-bezier(0.34, 1.56, 0.64, 1);
+    cursor: pointer;
+}
+
+/* Нежные свечения разных цветов (настроены на мягкость) */
+.glow-blue   { box-shadow: 0 0 50px rgba(100, 180, 255, 0.25), inset -10px -10px 20px rgba(0,0,0,0.1); }
+.glow-purple { box-shadow: 0 0 50px rgba(200, 120, 255, 0.25), inset -10px -10px 20px rgba(0,0,0,0.1); }
+.glow-gold   { box-shadow: 0 0 50px rgba(255, 200, 100, 0.25), inset -10px -10px 20px rgba(0,0,0,0.1); }
+.glow-green  { box-shadow: 0 0 50px rgba(100, 255, 180, 0.25), inset -10px -10px 20px rgba(0,0,0,0.1); }
+.glow-red    { box-shadow: 0 0 50px rgba(255, 120, 120, 0.25), inset -10px -10px 20px rgba(0,0,0,0.1); }
+
+/* Состояние при активации (будет добавляться через JS) */
+.journey-step.active .sphere {
+    transform: scale(1.3) rotate(15deg);
+}
+
+/* 5. ТЕКСТОВЫЙ КОНТЕНТ */
+.text-content {
+    flex: 0 0 50%;
+    padding: 0 50px;
+    box-sizing: border-box;
+}
+
+.accent-title {
+    font-size: 2.2rem;
+    font-weight: 800;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    transition: color 0.5s ease;
+}
+
+/* Цвета заголовков в тон свечения */
+.glow-blue + .text-content .accent-title { color: #a0d8ff; }
+.glow-purple + .text-content .accent-title { color: #e0b0ff; }
+.glow-gold + .text-content .accent-title { color: #ffe0a0; }
+.glow-green + .text-content .accent-title { color: #b0ffd8; }
+.glow-red + .text-content .accent-title { color: #ffb0b0; }
+
+.main-text {
+    font-size: 1.15rem;
+    line-height: 1.8;
+    color: var(--text-main);
+    font-weight: 300;
+    max-width: 500px;
+    /* Убираем размытие, делаем текст четким */
+    text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+}
+
+/* Эффект обтекания (shape-outside работает только с float) */
+.step-left .text-content { text-align: left; }
+.step-right .text-content { text-align: right; }
+
+/* 6. АДАПТИВНОСТЬ (МОБИЛКИ) */
+@media (max-width: 900px) {
+    .journey-step, .step-right {
+        flex-direction: column;
+        margin-bottom: 150px;
+    }
+    .line-connector {
+        left: 30px;
+        transform: none;
+    }
+    .planet-wrapper {
+        margin-bottom: 30px;
+        justify-content: flex-start;
+        padding-left: 50px;
+    }
+    .text-content {
+        padding: 0 20px 0 70px;
+        text-align: left !important;
+    }
+    .sphere {
+        width: 120px;
+        height: 120px;
+    }
+}
+
+/* Направление зигзага */
+.step-left { flex-direction: row; }
+.step-right { flex-direction: row-reverse; }
+
+/* 4. ПЛАНЕТЫ (СФЕРЫ) */
+.planet-wrapper {
+    flex: 0 0 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.sphere {
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    /* Градиент для эффекта объема (3D) */
+    background: radial-gradient(circle at 35% 35%, #ffffff 0%, var(--planet-cream) 50%, #dcd0ba 100%);
+    position: relative;
+    transition: transform var(--transition-speed) cubic-bezier(0.34, 1.56, 0.64, 1);
+    cursor: pointer;
+}
+
+/* Нежные свечения разных цветов (настроены на мягкость) */
+.glow-blue   { box-shadow: 0 0 50px rgba(100, 180, 255, 0.25), inset -10px -10px 20px rgba(0,0,0,0.1); }
+.glow-purple { box-shadow: 0 0 50px rgba(200, 120, 255, 0.25), inset -10px -10px 20px rgba(0,0,0,0.1); }
+.glow-gold   { box-shadow: 0 0 50px rgba(255, 200, 100, 0.25), inset -10px -10px 20px rgba(0,0,0,0.1); }
+.glow-green  { box-shadow: 0 0 50px rgba(100, 255, 180, 0.25), inset -10px -10px 20px rgba(0,0,0,0.1); }
+.glow-red    { box-shadow: 0 0 50px rgba(255, 120, 120, 0.25), inset -10px -10px 20px rgba(0,0,0,0.1); }
+
+/* Состояние при активации (будет добавляться через JS) */
+.journey-step.active .sphere {
+    transform: scale(1.3) rotate(15deg);
+}
+
+/* 5. ТЕКСТОВЫЙ КОНТЕНТ */
+.text-content {
+    flex: 0 0 50%;
+    padding: 0 50px;
+    box-sizing: border-box;
+}
+
+.accent-title {
+    font-size: 2.2rem;
+    font-weight: 800;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    transition: color 0.5s ease;
+}
+
+/* Цвета заголовков в тон свечения */
+.glow-blue + .text-content .accent-title { color: #a0d8ff; }
+.glow-purple + .text-content .accent-title { color: #e0b0ff; }
+.glow-gold + .text-content .accent-title { color: #ffe0a0; }
+.glow-green + .text-content .accent-title { color: #b0ffd8; }
+.glow-red + .text-content .accent-title { color: #ffb0b0; }
+
+.main-text {
+    font-size: 1.15rem;
+    line-height: 1.8;
+    color: var(--text-main);
+    font-weight: 300;
+    max-width: 500px;
+    /* Убираем размытие, делаем текст четким */
+    text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+}
+
+/* Эффект обтекания (shape-outside работает только с float) */
+.step-left .text-content { text-align: left; }
+.step-right .text-content { text-align: right; }
+
+/* 6. АДАПТИВНОСТЬ (МОБИЛКИ) */
+@media (max-width: 900px) {
+    .journey-step, .step-right {
+        flex-direction: column;
+        margin-bottom: 150px;
+    }
+    .line-connector {
+        left: 30px;
+        transform: none;
+    }
+    .planet-wrapper {
+        margin-bottom: 30px;
+        justify-content: flex-start;
+        padding-left: 50px;
+    }
+    .text-content {
+        padding: 0 20px 0 70px;
+        text-align: left !important;
+    }
+    .sphere {
+        width: 120px;
+        height: 120px;
+    }
+}
