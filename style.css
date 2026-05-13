@@ -492,10 +492,10 @@ img, svg { display: block; }
 }
 
 .stop__body--right {
-  padding-right: clamp(2rem, 4vw, 5rem);
+  padding-left: clamp(2rem, 4vw, 5rem);
 }
 .stop__body--left {
-  padding-left: clamp(2rem, 4vw, 5rem);
+  padding-right: clamp(2rem, 4vw, 5rem);
 }
 
 /*
@@ -642,7 +642,7 @@ img, svg { display: block; }
 }
 
 /* Выравнивание — зигзаг */
-.stop--left  .stop__text  { text-align: right; }
+.stop--left  .stop__text  { text-align: left; }
 .stop--right .stop__text  { text-align: left; }
 .stop--right .stop__desc  { margin-left: right; }
 
