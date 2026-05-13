@@ -1,179 +1,80 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="theme-color" content="#010109">
-  <title>SPARK Observatory</title>
-
-  <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPARK // Journey</title>
 </head>
 <body>
 
-  <!-- ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
-       LAYER 0 — Starfield canvas (z-index: 0)
-       Animated via JS: twinkling state-machine per star
-  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
-  <canvas id="starfield" aria-hidden="true"></canvas>
+    <main class="journey-wrapper">
+        
+        <div class="connecting-line"></div>
 
-  <!-- ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
-       LAYER 1 — Nebula atmosphere (z-index: 1)
-       Pure CSS radial gradients, slow drift animation
-  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
-  <div class="nebula" aria-hidden="true"></div>
+        <section class="step-section left" id="who-we-are">
+            <div class="planet-container">
+                <div class="planet-sphere color-blue"></div>
+            </div>
+            <div class="content-box">
+                <h2 class="title">Кто мы</h2>
+                <p class="description">
+                    Команда энтузиастов, объединивших опыт в разработке и финансах, чтобы создать SPARK — платформу нового поколения.
+                </p>
+            </div>
+        </section>
 
-  <!-- ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
-       LAYER 2 — Observatory grid (z-index: 2–3)
-       Desktop: CSS Grid 60×45
-       Mobile:  CSS Grid 20×30
-  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
-  <main class="obs" id="obs" role="main">
+        <section class="step-section right" id="idea-origin">
+            <div class="planet-container">
+                <div class="planet-sphere color-purple"></div>
+            </div>
+            <div class="content-box">
+                <h2 class="title">Как пришла идея</h2>
+                <p class="description">
+                    Все началось с желания упростить сложные инвестиционные инструменты и сделать их доступными каждому разработчику.
+                </p>
+            </div>
+        </section>
 
-    <!-- ╔══════════════════════════════════════════╗
-         ║  BLACK HOLE — centre anchor              ║
-         ║  Desktop: col 27–34 / row 19–27          ║
-         ║  Mobile:  col  8–13 / row 13–18          ║
-         ╚══════════════════════════════════════════╝ -->
-    <div class="black-hole" id="bh" aria-label="Центральная чёрная дыра SPARK" role="img">
+        <section class="step-section left" id="project-essence">
+            <div class="planet-container">
+                <div class="planet-sphere color-gold"></div>
+            </div>
+            <div class="content-box">
+                <h2 class="title">Смысл проекта</h2>
+                <p class="description">
+                    SPARK — это не просто цифры. Это экосистема, где технологии работают на рост вашего капитала в реальном времени.
+                </p>
+            </div>
+        </section>
 
-      <!-- Accretion disc — slow conic-gradient spin -->
-      <div class="bh-accretion" aria-hidden="true"></div>
+        <section class="step-section right" id="our-goals">
+            <div class="planet-container">
+                <div class="planet-sphere color-green"></div>
+            </div>
+            <div class="content-box">
+                <h2 class="title">Наши цели</h2>
+                <p class="description">
+                    Стать стандартом безопасности и прозрачности в мире цифровых активов, объединяя тысячи инвесторов.
+                </p>
+            </div>
+        </section>
 
-      <!-- Pulsing atmosphere rings (3 layers, staggered delay) -->
-      <div class="bh-ring" style="--rs:178px; --ro:.09; --rd:0s"    aria-hidden="true"></div>
-      <div class="bh-ring" style="--rs:136px; --ro:.15; --rd:-2.4s" aria-hidden="true"></div>
-      <div class="bh-ring" style="--rs: 98px; --ro:.23; --rd:-4.8s" aria-hidden="true"></div>
+        <section class="step-section left" id="thanks">
+            <div class="planet-container">
+                <div class="planet-sphere color-red"></div>
+            </div>
+            <div class="content-box">
+                <h2 class="title">Благодарность</h2>
+                <p class="description">
+                    Спасибо, что вы с нами. Ваше доверие — это топливо, на котором работает двигатель нашей станции SPARK.
+                </p>
+            </div>
+        </section>
 
-      <!-- Core singularity -->
-      <div class="bh-core" aria-hidden="true"></div>
+    </main>
 
-      <!-- Label below core -->
-      <div class="bh-label" aria-hidden="true">
-        <b class="bh-spark">SPARK</b>
-        <span class="bh-obs">Observatory</span>
-      </div>
-
-    </div><!-- /.black-hole -->
-
-
-    <!-- ╔══════════════════════════════════════════╗
-         ║  SYSTEM: ТЕХНОЛОГИИ  — top centre        ║
-         ║  Desktop: col 24–38 / row  2–17          ║
-         ║  Mobile:  col  4–17 / row  1–12          ║
-         ║                                          ║
-         ║  5 orbits, closest = most significant:   ║
-         ║  1. AI Tools  (orbit r=30) ← самая важная║
-         ║  2. DeFi      (orbit r=50)               ║
-         ║  3. Web3      (orbit r=70)               ║
-         ║  4. Hardware  (orbit r=90)               ║
-         ║  5. CleanTech (orbit r=110) ← бывшая Эко ║
-         ╚══════════════════════════════════════════╝ -->
-    <article
-      class="sys"
-      id="sys-tech"
-      data-key="tech"
-      aria-label="Система Технологии"
-      role="button"
-      tabindex="0"
-    >
-      <div class="sys-inner" data-max-r="110">
-
-        <!-- Orbit 1 — AI Tools (ближайшая, самая значимая) -->
-        <div class="orb"
-          style="--od:22s; --dl:-3s;  --or:30px"
-          data-base-r="30"
-          data-label="AI Tools"
-          aria-hidden="true"
-        >
-          <div class="planet p-cyan"   aria-label="AI Tools"></div>
-        </div>
-
-        <!-- Orbit 2 — DeFi -->
-        <div class="orb"
-          style="--od:31s; --dl:-11s; --or:50px"
-          data-base-r="50"
-          data-label="DeFi"
-          aria-hidden="true"
-        >
-          <div class="planet p-blue"   aria-label="DeFi"></div>
-        </div>
-
-        <!-- Orbit 3 — Web3 -->
-        <div class="orb"
-          style="--od:27s; --dl:-19s; --or:70px"
-          data-base-r="70"
-          data-label="Web3"
-          aria-hidden="true"
-        >
-          <div class="planet p-purple" aria-label="Web3"></div>
-        </div>
-
-        <!-- Orbit 4 — Hardware -->
-        <div class="orb"
-          style="--od:41s; --dl:-6s;  --or:90px"
-          data-base-r="90"
-          data-label="Hardware"
-          aria-hidden="true"
-        >
-          <div class="planet p-white"  aria-label="Hardware"></div>
-        </div>
-
-        <!-- Orbit 5 — CleanTech (дальняя, бывшая «Эко») -->
-        <div class="orb"
-          style="--od:50s; --dl:-25s; --or:110px"
-          data-base-r="110"
-          data-label="CleanTech"
-          aria-hidden="true"
-        >
-          <div class="planet p-green"  aria-label="CleanTech"></div>
-        </div>
-
-        <!-- Star centre + halo -->
-        <div class="sys-star s-blue"  aria-hidden="true"></div>
-        <div class="sys-glow g-blue"  aria-hidden="true"></div>
-
-      </div><!-- /.sys-inner -->
-
-      <!-- Nameplate (label + trend) -->
-      <div class="sys-plate" aria-hidden="true">
-        <span class="sys-name">Технологии</span>
-        <span class="sys-pct">↑ 42%</span>
-      </div>
-
-    </article><!-- /#sys-tech -->
-
-
-    <!-- ╔══════════════════════════════════════════╗
-         ║  SYSTEM: СОЦИУМ — bottom-left            ║
-         ║  Desktop: col  8–23 / row 30–46          ║
-         ║  Mobile:  col  1–10 / row 19–31          ║
-         ║                                          ║
-         ║  4 orbits:                               ║
-         ║  1. B2B SaaS  (r=30) ← топ               ║
-         ║  2. Marketplace (r=50)                   ║
-         ║  3. EdTech    (r=70)                     ║
-         ║  4. DAO       (r=90) ← наименее значим   ║
-         ╚══════════════════════════════════════════╝ -->
-    <article
-      class="sys"
-      id="sys-social"
-      data-key="social"
-      aria-label="Система Социум"
-      role="button"
-      tabindex="0"
-    >
-      <div class="sys-inner" data-max-r="90">
-
-        <!-- Orbit 1 — B2B SaaS -->
-        <div class="orb"
-          style="--od:25s; --dl:-7s;  --or:30px"
-          data-base-r="30"
-          data-label="B2B SaaS"
+</body>
+</html>
           aria-hidden="true"
         >
           <div class="planet p-gold"   aria-label="B2B SaaS"></div>
