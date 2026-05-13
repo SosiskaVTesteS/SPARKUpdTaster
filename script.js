@@ -1,39 +1,35 @@
-/* ═══════════════════════════════════════════════════════════════
-   SPARK Observatory — script.js
-   ───────────────────────────────────────────────────────────────
-   Sections:
-   1. Starfield canvas  — twinkling state-machine
-   2. Orbit sizing      — runtime radius scaling to fit grid cells
-   3. Bubble injection  — planet label bubbles into each .orb
-   4. Focus mechanics   — open / close system, fly-to-centre
-   5. Detail panel      — render system data
-   6. Planet tooltips   — desktop hover + mobile tap
-   7. Keyboard nav      — ESC, Enter, Space
-   8. Resize handler    — debounced, re-runs sizing
-═══════════════════════════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', () => {
+    // 1. Находим все наши секции с планетами
+    const sections = document.querySelectorAll('.step-section');
 
-'use strict';
+    // 2. Настройки для "глаз" (Observer)
+    const options = {
+        root: null, // следим относительно окна браузера
+        threshold: 0.6 // планета считается "активной", когда видна на 60%
+    };
 
-/* ───────────────────────────────────────────────────────────────
-   SYSTEM DATA
-   Single source of truth for all three star systems.
-─────────────────────────────────────────────────────────────── */
-const SYSTEMS = {
-  tech: {
-    name:  'Технологии',
-    trend: '↑ 42% за последний месяц',
-    desc:  'Самая динамичная зона SPARK. ИИ-инструменты нового поколения, DeFi-протоколы и Web3-инфраструктура формируют ядро. Высокий риск — высокая доходность.',
-    metrics: [
-      ['Активных идей',    '1 247'],
-      ['Объём SPK / 24ч',  '84 320'],
-      ['Средний ROI',      '+61%'],
-      ['Новых сегодня',    '38'],
-      ['Топ-тег',          'AI Tools'],
-    ],
-  },
-  social: {
-    name:  'Социум',
-    trend: '↑ 31% за последний месяц',
+    // 3. Создаем логику: что делать, когда планета в фокусе
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                // Добавляем класс active, когда доскроллили
+                entry.target.classList.add('active');
+                
+                // Для красоты: можно менять цвет фона или свечение всей страницы
+                const color = getComputedStyle(entry.target.querySelector('.planet-sphere')).boxShadow;
+                console.log('Текущий этап активен:', entry.target.id);
+            } else {
+                // Убираем класс, когда пролистали дальше (по желанию)
+                entry.target.classList.remove('active');
+            }
+        });
+    }, options);
+
+    // 4. Запускаем слежку за каждой секцией
+    sections.forEach(section => {
+        observer.observe(section);
+    });
+});
     desc:  'Социальные платформы, B2B SaaS и экономика доверия. Предсказуемые метрики роста, умеренный риск. Идеальная точка входа для консервативных инвесторов.',
     metrics: [
       ['Активных идей',    '742'],
