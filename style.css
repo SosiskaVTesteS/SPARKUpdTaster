@@ -642,8 +642,8 @@ img, svg { display: block; }
 }
 
 /* Выравнивание — зигзаг */
-.stop--left  .stop__text  { text-align: left; }
-.stop--right .stop__text  { text-align: right; }
+.stop--left  .stop__text  { text-align: right; }
+.stop--right .stop__text  { text-align: left; }
 .stop--right .stop__desc  { margin-left: auto; }
 
 /* ──────────────────────────────────────────────────────────────
