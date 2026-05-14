@@ -483,42 +483,6 @@ img, svg { display: block; }
 .stop__planet-wrap.is-active .stop__planet--mint     { box-shadow: 0 0 120px 30px rgba(110, 231, 183, 0.32), inset 0 0 35px 10px rgba(0,0,0,0.38), inset -15px -12px 30px rgba(0,0,0,0.28); }
 .stop__planet-wrap.is-active .stop__planet--coral    { box-shadow: 0 0 120px 30px rgba(252, 165, 165, 0.32), inset 0 0 35px 10px rgba(0,0,0,0.38), inset -15px -12px 30px rgba(0,0,0,0.28); }
 
-/* ──────────────────────────────────────────────────────────────
-   11. Текстовый блок с обтеканием (shape-outside)
-────────────────────────────────────────────────────────────────*/
-.stop__body {
-  flex: 1;
-  overflow: hidden; /* обязательно для shape-outside */
-}
-
-.stop__body--right {
-  padding-left: clamp(2rem, 4vw, 5rem);
-}
-.stop__body--left {
-  padding-right: clamp(2rem, 4vw, 5rem);
-}
-
-/*
-  Невидимый float-элемент, форма которого задаёт обтекание текста вокруг сферы.
-  Ширина ~55% от планеты создаёт красивую дугу первых строк.
-*/
-.stop__shape-float--left {
-  float: left;
-  width:  calc(var(--planet-size) * 0.52);
-  height: calc(var(--planet-size) * 1.15);
-  shape-outside: circle(50% at 100% 50%);
-  shape-margin: 1rem;
-  clip-path: circle(50% at 100% 50%);
-}
-
-.stop__shape-float--right {
-  float: right;
-  width:  calc(var(--planet-size) * 0.52);
-  height: calc(var(--planet-size) * 1.15);
-  shape-outside: circle(50% at 0% 50%);
-  shape-margin: 1rem;
-  clip-path: circle(50% at 0% 50%);
-}
 
 /* ──────────────────────────────────────────────────────────────
    12. АНИМАЦИЯ ТЕКСТА — ИСПРАВЛЕНИЕ ПРОБЛЕМЫ 1
