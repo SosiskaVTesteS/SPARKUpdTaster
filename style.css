@@ -503,7 +503,7 @@ img, svg { display: block; }
   Ширина ~55% от планеты создаёт красивую дугу первых строк.
 */
 .stop__shape-float--left {
-  float: right;
+  float: left;
   width:  calc(var(--planet-size) * 0.52);
   height: calc(var(--planet-size) * 1.15);
   shape-outside: circle(50% at 100% 50%);
@@ -512,7 +512,7 @@ img, svg { display: block; }
 }
 
 .stop__shape-float--right {
-  float: left;
+  float: right;
   width:  calc(var(--planet-size) * 0.52);
   height: calc(var(--planet-size) * 1.15);
   shape-outside: circle(50% at 0% 50%);
