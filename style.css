@@ -31,7 +31,7 @@ body {
 }
 
 .settings-title {
-    color: #a88f62; /* Фирменное золото для заголовков */
+    color: #FDCC0D; /* Фирменное золото для заголовков */
     font-size: 1.3rem;
     letter-spacing: 2px;
     text-transform: uppercase;
@@ -108,7 +108,7 @@ body {
     position: absolute;
     cursor: pointer;
     top: 0; left: 0; right: 0; bottom: 0;
-    background-color: #FDCC0D; /* Темный фон подложки в выключенном состоянии */
+    background-color: #E5CF87; /* Темный фон подложки в выключенном состоянии */
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     border-radius: 20px;
     border: 1px solid #22222a; /* Едва заметный контур */
