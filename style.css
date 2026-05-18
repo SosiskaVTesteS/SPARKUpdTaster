@@ -108,7 +108,7 @@ body {
     position: absolute;
     cursor: pointer;
     top: 0; left: 0; right: 0; bottom: 0;
-    background-color: #e2e8f0; /* Темный фон подложки в выключенном состоянии */
+    background-color: #FDCC0D; /* Темный фон подложки в выключенном состоянии */
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     border-radius: 20px;
     border: 1px solid #22222a; /* Едва заметный контур */
